@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import treeImg from "../assets/LandingPage_img.png"; 
+import co2Img from "../assets/CO2_arrow.png";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -7,7 +8,7 @@ const Landing = () => {
   return (
     <div className="font-sans">
 
-      <nav className="flex text-white bg-[#0a2c2a] position-sticky  justify-between items-center px-10 py-6">
+      <nav className="flex text-white bg-[#0a2c2a]   justify-between items-center px-10 py-5">
           <div className="text-2xl font-bold">🌿 Carbvium</div> 
 
           {/* <div className="hidden md:flex gap-8 text-sm text-gray-300">
@@ -21,7 +22,7 @@ const Landing = () => {
             onClick={() => navigate("/login")}
             className="bg-green-500 hover:bg-green-600 text-black font-medium px-6 py-2 rounded-full"
           >
-            Join Today
+            Login
           </button>
         </nav>
 
@@ -50,9 +51,10 @@ const Landing = () => {
         {/* Hero Content */}
         <div className="flex flex-col items-center text-center px-6 mt-10">
 
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight max-w-4xl">
-            TRACK, REDUCE, AND OFFSET YOUR{" "}
-            <span className="text-green-400">CARBON</span> FOOTPRINT
+          <h1 className="text-4xl md:text-[46px] mt-5 font-extrabold leading-tight max-w-4xl">
+            EVERY VEHICLE HAS A {" "}
+            <span className="text-green-400">CARBON</span> STORY <br/>
+            CHOOSE THE RIGHT ONE 
           </h1>
 
           <p className="text-gray-300 mt-6 max-w-xl">
@@ -123,7 +125,7 @@ const Landing = () => {
         </p>
 
         <div className="mt-12">
-          <div className="text-7xl font-extrabold text-green-500">CO₂</div>
+          <div className="text-7xl flex  font-extrabold text-green-500 w-[250px] md:w-[250px] mx-auto"><img src={co2Img} alt="CO₂" /></div>
         </div>
 
         <button className="mt-8 bg-green-500 hover:bg-green-600 text-black px-6 py-3 rounded-full font-medium">
