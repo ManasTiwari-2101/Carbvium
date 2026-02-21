@@ -12,7 +12,6 @@ import {
   CartesianGrid,
 } from "recharts";
 import CarCard from "./card";
-import userLogo from "../assets/userlogo.jpg";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -21,22 +20,6 @@ export default function Dashboard() {
   const [cars, setCars] = useState([]);
   const [vehicleType, setVehicleType] = useState("all");
   const [priceRange, setPriceRange] = useState("all");
-  const [user, setUser] = useState({ username: "User", email: "" });
-
-  // ==============================
-  // LOAD USER DATA FROM LOCALSTORAGE
-  // ==============================
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-      } catch (e) {
-        console.error("Error parsing user data:", e);
-      }
-    }
-  }, []);
 
   // ==============================
   // FETCH CHART DATA
@@ -143,31 +126,28 @@ export default function Dashboard() {
   return (
     <div className="h-screen flex flex-col bg-gray-50">
       {/* ================= HEADER ================= */}
-      <nav className="flex text-white bg-[#0a2c2a] justify-between items-center px-10 py-5">
-        <div className="text-2xl font-bold">🌿 Carbvium</div>
+      <header className="h-16 bg-white shadow flex items-center justify-between px-6">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-green-500"></div>
+          <h1 className="text-xl font-bold tracking-wide">CARBVIUM</h1>
+        </div>
+
         <button
-          onClick={() => {
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("refresh_token");
-            localStorage.removeItem("user");
-            navigate("/");
-          }}
-          className="bg-green-500 hover:bg-green-600 text-black font-medium px-6 py-2 rounded-full"
+          onClick={() => navigate("/")}
+          className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-black"
         >
           Logout
         </button>
-      </nav>
+      </header>
 
       {/* ================= BODY ================= */}
       <div className="flex flex-1 overflow-hidden">
         {/* ================= SIDEBAR ================= */}
         <aside className="w-[280px] bg-gray-100 border-r p-6 flex flex-col gap-6">
           <div className="flex flex-col items-center gap-3">
-            <div className="w-20 h-20 rounded-full bg-gray-300 overflow-hidden flex items-center justify-center">
-              <img src={userLogo} alt="User" className="w-full h-full object-contain" />
-            </div>
-            <h3 className="font-semibold">{user.username || "User"}</h3>
-            <p className="text-sm text-gray-500">{user.email || ""}</p>
+            <div className="w-20 h-20 rounded-full bg-gray-300"></div>
+            <h3 className="font-semibold">User Name</h3>
+            <p className="text-sm text-gray-500">user@email.com</p>
           </div>
 
           <div className="bg-white p-4 rounded-xl shadow">
