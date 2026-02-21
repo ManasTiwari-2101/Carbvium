@@ -58,15 +58,15 @@ export default function CarCard({ car }) {
                             onClick={() => setIsExpanded(false)}
                         >
                             <motion.div
-                                className="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col md:flex-row"
+                                className="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-5xl w-full max-h-[90vh] flex flex-col md:flex-row"
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 {/* Left Side - Image (50%) */}
-                                <div className="md:w-1/2 h-64 md:h-auto relative bg-gray-200">
+                                <div className="md:w-1/2 h-72 md:h-[500px] relative bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-6">
                                     <img
                                         src={carImage}
                                         alt={car.name || car.model_name}
-                                        className="w-full h-full object-cover"
+                                        className="max-w-full max-h-full object-contain"
                                         onError={(e) => {
                                             e.target.src = "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600";
                                         }}
@@ -130,18 +130,16 @@ export default function CarCard({ car }) {
                                             </span>
                                         </div>
 
-                                        {/* Battery CO2 (if EV) */}
-                                        {car.battery_co2_kg && (
-                                            <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-xl">🔋</span>
-                                                    <span className="text-gray-700">Battery CO₂</span>
-                                                </div>
-                                                <span className="font-bold text-purple-700">
-                                                    {car.battery_co2_kg.toLocaleString()} kg
-                                                </span>
+                                        {/* Battery CO2 */}
+                                        <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-xl">🔋</span>
+                                                <span className="text-gray-700">Battery CO₂</span>
                                             </div>
-                                        )}
+                                            <span className="font-bold text-purple-700">
+                                                {car.battery_co2_kg ? `${car.battery_co2_kg.toLocaleString()} kg` : "Negligible"}
+                                            </span>
+                                        </div>
 
                                         {/* Total Lifecycle CO2 */}
                                         <div className={`flex justify-between items-center p-4 rounded-lg ${getCO2BadgeColor(car.co2 || car.total_lifecycle_co2_kg)}`}>
