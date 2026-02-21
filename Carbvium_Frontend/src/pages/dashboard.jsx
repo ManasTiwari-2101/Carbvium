@@ -22,21 +22,52 @@ export default function Dashboard() {
   const [priceRange, setPriceRange] = useState("all");
 
   // ==============================
-  // FETCH CHART DATA
+  // FETCH CHART DATA WITH FILTERS
   // ==============================
   useEffect(() => {
-    fetch("http://localhost:5000/api/top15-carbon")
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchChartData = async () => {
+      try {
+        let url;
+
+        // If no filters applied, use the default top15-carbon endpoint
+        if (vehicleType === "all" && priceRange === "all") {
+          url = "http://localhost:5000/api/top15-carbon";
+        } else {
+          // If filters are applied, use the filtered endpoint
+          const params = new URLSearchParams();
+          if (vehicleType !== "all") {
+            params.append("vehicleType", vehicleType);
+          }
+          if (priceRange !== "all") {
+            params.append("priceRange", priceRange);
+          }
+          url = `http://localhost:5000/api/top15-carbon/filtered?${params.toString()}`;
+        }
+
+        console.log("Fetching chart data from:", url);
+
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Chart data received:", data);
+
         // Transform to include full name and show first 15 vehicles
         const transformed = data.slice(0, 15).map((car) => ({
           ...car,
           name: `${car.company_name || ''} ${car.model_name}`.trim(),
         }));
         setChartData(transformed);
-      })
-      .catch((err) => console.error(err));
-  }, []);
+      } catch (err) {
+        console.error("Error fetching chart data:", err);
+        setChartData([]);
+      }
+    };
+
+    fetchChartData();
+  }, [vehicleType, priceRange]);
 
   // ==============================
   // FETCH CAR DATA FROM BACKEND
@@ -114,13 +145,11 @@ export default function Dashboard() {
   // ==============================
   // COLOR BASED ON VEHICLE TYPE
   // ==============================
-  const getBarColor = (modelName) => {
-    const evModels = ["Nexon EV", "Punch EV", "Tiago EV"];
-    const hybridModels = ["Innova Hycross Hybrid"];
-
-    if (evModels.includes(modelName)) return "#22c55e";
-    if (hybridModels.includes(modelName)) return "#9ca3af";
-    return "#facc15";
+  const getBarColor = (vehicleType) => {
+    // Green for EV, Gray for Hybrid, Yellow for Fuel
+    if (vehicleType === "EV") return "#22c55e";
+    if (vehicleType === "HYBRID") return "#9ca3af";
+    return "#facc15"; // Fuel (Petrol/Diesel)
   };
 
   return (
@@ -209,7 +238,7 @@ export default function Dashboard() {
                     {chartData.map((entry, index) => (
                       <Cell
                         key={index}
-                        fill={getBarColor(entry.model_name)}
+                        fill={getBarColor(entry.vehicle_type)}
                       />
                     ))}
                   </Bar>

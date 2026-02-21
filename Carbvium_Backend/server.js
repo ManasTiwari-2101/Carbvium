@@ -18,6 +18,16 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Shuffle function for random order
+const shuffleArray = (array) => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
 app.get("/", (req, res) => {
   res.send("Carbvium Backend Running 🚀");
 });
@@ -27,7 +37,45 @@ app.post("/api/auth/signup", signup);
 app.post("/api/auth/login", login);
 app.post("/api/auth/logout", logout);
 
+// Filtered top 15 vehicles with query parameters (MUST BE BEFORE /api/top15-carbon)
+app.get("/api/top15-carbon/filtered", async (req, res) => {
+  const { vehicleType, priceRange } = req.query;
+  console.log("Filtered endpoint hit with:", { vehicleType, priceRange });
 
+  let query = supabase
+    .from("vehicles_lifecycle_data")
+    .select("company_name, model_name, total_lifecycle_co2_kg, vehicle_type, price_inr_lakhs");
+
+  // Apply vehicle type filter
+  if (vehicleType && vehicleType !== "all") {
+    query = query.eq("vehicle_type", vehicleType);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("Error fetching filtered data:", error);
+    return res.status(500).json(error);
+  }
+
+  // Filter by price range on client side
+  let filtered = data;
+  if (priceRange && priceRange !== "all") {
+    filtered = data.filter((car) => {
+      const price = car.price_inr_lakhs;
+      if (priceRange === "low") return price < 10;
+      if (priceRange === "mid") return price >= 10 && price <= 20;
+      if (priceRange === "high") return price > 20;
+      return true;
+    });
+  }
+
+  // Return top 15 shuffled
+  const result = filtered.slice(0, 15);
+  const shuffled = shuffleArray(result);
+  console.log("Returning", shuffled.length, "filtered vehicles in random order");
+  res.json(shuffled);
+});
 
 app.get("/api/top15-carbon", async (req, res) => {
   const topModels = [
@@ -38,12 +86,14 @@ app.get("/api/top15-carbon", async (req, res) => {
 
   const { data, error } = await supabase
     .from("vehicles_lifecycle_data")
-    .select("company_name, model_name, total_lifecycle_co2_kg, vehicle_type")
+    .select("company_name, model_name, total_lifecycle_co2_kg, vehicle_type, price_inr_lakhs")
     .in("model_name", topModels);
 
   if (error) return res.status(500).json(error);
 
-  res.json(data);
+  // Shuffle the data for random display
+  const shuffled = shuffleArray(data);
+  res.json(shuffled);
 });
 
 app.get("/api/vehicles", async (req, res) => {
