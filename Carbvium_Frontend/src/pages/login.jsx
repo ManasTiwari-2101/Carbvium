@@ -1,12 +1,12 @@
 import { FaEnvelope, FaLock, FaUser } from "react-icons/fa";
 import { useState, useEffect } from "react";
-import carImage from "../assets/ev-car.png"; 
-import Dashboard from "./dashboard";
+import { useNavigate } from "react-router-dom";
+import carImage from "../assets/ev-car.png";
 
 const API_URL = "http://localhost:5000"; // Update if your backend runs on a different URL
 
 export default function Login() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -115,7 +115,7 @@ export default function Login() {
       localStorage.setItem("refresh_token", data.session.refresh_token);
       localStorage.setItem("user", JSON.stringify(data.user));
       
-      setIsLoggedIn(true);
+      navigate("/dashboard");
       
     } catch (err) {
       setError("Network error. Please try again.");
@@ -124,10 +124,6 @@ export default function Login() {
       setLoading(false);
     }
   };
-
-  if (isLoggedIn) {
-    return <Dashboard />;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center relative overflow-hidden">

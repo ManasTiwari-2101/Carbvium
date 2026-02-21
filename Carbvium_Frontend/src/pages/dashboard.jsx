@@ -28,11 +28,8 @@ export default function Dashboard() {
     fetch("http://localhost:5000/api/top15-carbon")
       .then((res) => res.json())
       .then((data) => {
-        // show only top 8 vehicles (clean UI)
-        const sorted = [...data].sort(
-          (a, b) => b.total_lifecycle_co2_kg - a.total_lifecycle_co2_kg
-        );
-        setChartData(sorted.slice(0, 8));
+        // show first 15 vehicles
+        setChartData(data.slice(0, 15));
       })
       .catch((err) => console.error(err));
   }, []);

@@ -20,7 +20,7 @@ export default function CarCard({ car }) {
     // Get CO2 badge color based on emissions level
     const getCO2BadgeColor = (co2) => {
         if (co2 < 10000) return "bg-green-50 text-green-700";
-        if (co2 < 15000) return "bg-yellow-50 text-yellow-700";
+        if (co2 < 20000) return "bg-yellow-50 text-yellow-700";
         return "bg-red-50 text-red-700";
     };
 
