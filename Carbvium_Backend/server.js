@@ -3,15 +3,29 @@ const cors = require("cors");
 require("dotenv").config();
 
 const supabase = require("./supabase_client");
+const { signup, login, logout } = require("./auth");
 
 const app = express();
 
-app.use(cors());
+// CORS Configuration
+const corsOptions = {
+  origin: ["http://localhost:5173", "http://localhost:3000", "http://localhost:8080"],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("Carbvium Backend Running 🚀");
 });
+
+// Authentication Routes
+app.post("/api/auth/signup", signup);
+app.post("/api/auth/login", login);
+app.post("/api/auth/logout", logout);
 
 
 

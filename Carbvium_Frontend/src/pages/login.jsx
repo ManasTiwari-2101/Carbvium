@@ -1,11 +1,129 @@
 import { FaEnvelope, FaLock, FaUser } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import carImage from "../assets/ev-car.png"; 
 import Dashboard from "./dashboard";
+
+const API_URL = "http://localhost:5000"; // Update if your backend runs on a different URL
 
 export default function Login() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // Clear error when switching between login and signup
+  useEffect(() => {
+    setError("");
+  }, [isSignUp]);
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    // Validation
+    if (!username || !email || !password || !confirmPassword) {
+      setError("All fields are required");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 8 || password.length > 15) {
+      setError("Password must be between 8-15 characters");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${API_URL}/api/auth/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          username,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Signup failed");
+        return;
+      }
+
+      // Signup successful, switch to login
+      setError("");
+      setUsername("");
+      setPassword("");
+      setConfirmPassword("");
+      setEmail("");
+      setIsSignUp(false);
+      setError("Account created successfully! Please login.");
+      
+    } catch (err) {
+      setError("Network error. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    // Validation
+    if (!email || !password) {
+      setError("Email and password are required");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Login failed");
+        return;
+      }
+
+      // Login successful - store tokens and redirect
+      localStorage.setItem("access_token", data.session.access_token);
+      localStorage.setItem("refresh_token", data.session.refresh_token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      
+      setIsLoggedIn(true);
+      
+    } catch (err) {
+      setError("Network error. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (isLoggedIn) {
     return <Dashboard />;
@@ -42,6 +160,8 @@ export default function Login() {
             <input
               type="text"
               placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
@@ -53,6 +173,8 @@ export default function Login() {
           <input
             type="email"
             placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
@@ -63,6 +185,8 @@ export default function Login() {
           <input
           minLength={8}
           maxLength={15}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             type="password"
             placeholder="Password"
             className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -76,6 +200,8 @@ export default function Login() {
             <input
             minLength={8}
             maxLength={15}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               type="password"
               placeholder="Confirm Password"
               className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -92,9 +218,20 @@ export default function Login() {
           </div>
         )}
 
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
+
         {/* Login/Signup Button */}
-        <button onClick={() => setIsLoggedIn(true)} className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition duration-300 font-medium hover:cursor-pointer">
-          {isSignUp ? "Sign Up" : "Login"}
+        <button 
+          onClick={isSignUp ? handleSignup : handleLogin}
+          disabled={loading}
+          className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition duration-300 font-medium hover:cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          {loading ? "Processing..." : isSignUp ? "Sign Up" : "Login"}
         </button>
 
         {/* Toggle Between Login and Signup */}
