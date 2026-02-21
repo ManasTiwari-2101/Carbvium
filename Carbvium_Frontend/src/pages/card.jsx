@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function CarCard({ car }) {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -25,6 +26,45 @@ export default function CarCard({ car }) {
         if (co2 < 10000) return "bg-green-50 text-green-700";
         if (co2 < 20000) return "bg-yellow-50 text-yellow-700";
         return "bg-red-50 text-red-700";
+    };
+
+    // Prepare pie chart data from CO2 emissions (percentage-based for lifecycle)
+    const getPieChartData = () => {
+        const data = [];
+        let total = 0;
+
+        if (car.manufacturing_co2_kg) total += car.manufacturing_co2_kg;
+        if (car.running_co2_kg) total += car.running_co2_kg;
+        if (car.battery_co2_kg) total += car.battery_co2_kg;
+
+        if (total === 0) return [];
+
+        if (car.manufacturing_co2_kg) {
+            data.push({
+                name: "Manufacturing",
+                value: Math.round((car.manufacturing_co2_kg / total) * 100),
+            });
+        }
+        if (car.running_co2_kg) {
+            data.push({
+                name: "Running",
+                value: Math.round((car.running_co2_kg / total) * 100),
+            });
+        }
+        if (car.battery_co2_kg) {
+            data.push({
+                name: "Battery",
+                value: Math.round((car.battery_co2_kg / total) * 100),
+            });
+        }
+        return data;
+    };
+
+    const COLORS = ["#3b82f6", "#f97316", "#a855f7"];
+
+    // Custom label renderer for 3D effect - percentage only inside pie
+    const renderCustomLabel = ({ value }) => {
+        return `${value}%`;
     };
 
     // Fallback image if car image is not available
@@ -58,35 +98,46 @@ export default function CarCard({ car }) {
                             onClick={() => setIsExpanded(false)}
                         >
                             <motion.div
-                                className="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-5xl w-full max-h-[90vh] flex flex-col md:flex-row"
+                                className="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-7xl w-full max-h-[90vh] flex flex-col md:flex-row"
                                 onClick={(e) => e.stopPropagation()}
                             >
-                                {/* Left Side - Image (50%) */}
-                                <div className="md:w-1/2 h-72 md:h-[500px] relative bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-6">
-                                    <img
-                                        src={carImage}
-                                        alt={car.name || car.model_name}
-                                        className="max-w-full max-h-full object-contain"
-                                        onError={(e) => {
-                                            e.target.src = "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600";
-                                        }}
-                                    />
-                                    {/* Vehicle Type Badge */}
-                                    <span className={`absolute top-4 left-4 text-sm font-semibold px-3 py-1 rounded-full ${getTypeColor(car.type || car.vehicle_type)}`}>
-                                        {car.type || car.vehicle_type}
-                                    </span>
+                                {/* Left Side - Image & Price (40%) */}
+                                <div className="md:w-2/5 flex flex-col bg-gradient-to-br from-gray-100 to-gray-200 p-6">
+                                    {/* Car Image - Reduced to 60% height */}
+                                    <div className="flex-1 flex items-center justify-center relative mb-4 min-h-0">
+                                        <img
+                                            src={carImage}
+                                            alt={car.name || car.model_name}
+                                            className="max-w-full max-h-full object-contain"
+                                            onError={(e) => {
+                                                e.target.src = "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600";
+                                            }}
+                                        />
+                                        {/* Vehicle Type Badge */}
+                                        <span className={`absolute top-4 left-4 text-sm font-semibold px-3 py-1 rounded-full ${getTypeColor(car.type || car.vehicle_type)}`}>
+                                            {car.type || car.vehicle_type}
+                                        </span>
+                                    </div>
+
+                                    {/* Price Section Below Image */}
+                                    {(car.price || car.price_inr_lakhs) && (
+                                        <div className="bg-white p-4 rounded-xl shadow-sm">
+                                            <p className="text-sm text-gray-500">Price</p>
+                                            <p className="text-2xl font-bold text-gray-800">₹{car.price || car.price_inr_lakhs} Lakhs</p>
+                                        </div>
+                                    )}
                                 </div>
 
-                                {/* Right Side - Details (50%) */}
-                                <div className="md:w-1/2 p-6 md:p-8 space-y-6 overflow-y-auto">
-                                    {/* Close Button */}
-                                    <div className="flex justify-between items-start">
-                                        <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
+                                {/* Right Side - Details (60%) */}
+                                <div className="md:w-3/5 p-5 md:p-6 flex flex-col space-y-4 overflow-hidden">
+                                    {/* Header with Title and Close Button */}
+                                    <div className="flex justify-between items-start gap-4">
+                                        <h2 className="text-2xl font-bold text-gray-800">
                                             {car.name || `${car.company_name || ''} ${car.model_name}`.trim()}
                                         </h2>
                                         <button
                                             onClick={() => setIsExpanded(false)}
-                                            className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                            className="text-gray-400 hover:text-gray-600 transition-colors p-1 flex-shrink-0"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -94,76 +145,129 @@ export default function CarCard({ car }) {
                                         </button>
                                     </div>
 
-                                    {/* Price */}
-                                    {(car.price || car.price_inr_lakhs) && (
-                                        <div className="bg-gray-50 p-4 rounded-xl">
-                                            <p className="text-sm text-gray-500">Price</p>
-                                            <p className="text-2xl font-bold text-gray-800">₹{car.price || car.price_inr_lakhs} Lakhs</p>
-                                        </div>
-                                    )}
-
-                                    {/* CO2 Details Section */}
-                                    <div className="space-y-4">
-                                        <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">
-                                            🌍 Carbon Emission Details
+                                    {/* Professional 3D Pie Chart */}
+                                    <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-3 rounded-2xl shadow-md border border-blue-100">
+                                        <h3 className="text-sm font-bold text-gray-700 mb-2 text-center">
+                                            🌍 CO₂ Lifecycle
                                         </h3>
-
-                                        {/* Manufacturing CO2 */}
-                                        <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-xl">🏭</span>
-                                                <span className="text-gray-700">Manufacturing CO₂</span>
+                                        {getPieChartData().length > 0 ? (
+                                            <div className="w-full" style={{ filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.1))" }}>
+                                                <ResponsiveContainer width="100%" height={190}>
+                                                    <PieChart>
+                                                        <Pie
+                                                            data={getPieChartData()}
+                                                            cx="50%"
+                                                            cy="55%"
+                                                            labelLine={false}
+                                                            label={renderCustomLabel}
+                                                            outerRadius={65}
+                                                            fill="#8884d8"
+                                                            dataKey="value"
+                                                            animationBegin={0}
+                                                            animationDuration={800}
+                                                        >
+                                                            {getPieChartData().map((entry, index) => (
+                                                                <Cell
+                                                                    key={`cell-${index}`}
+                                                                    fill={COLORS[index % COLORS.length]}
+                                                                    style={{ filter: `drop-shadow(2px 2px 4px rgba(0,0,0,0.1))` }}
+                                                                />
+                                                            ))}
+                                                        </Pie>
+                                                        <Tooltip
+                                                            formatter={(value) => `${value}%`}
+                                                            contentStyle={{
+                                                                backgroundColor: "rgba(255, 255, 255, 0.95)",
+                                                                border: "1.5px solid #3b82f6",
+                                                                borderRadius: "6px",
+                                                                boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                                                                padding: "4px 8px",
+                                                                fontSize: "12px"
+                                                            }}
+                                                        />
+                                                    </PieChart>
+                                                </ResponsiveContainer>
                                             </div>
-                                            <span className="font-bold text-blue-700">
-                                                {car.manufacturing_co2_kg ? `${car.manufacturing_co2_kg.toLocaleString()} kg` : "N/A"}
-                                            </span>
-                                        </div>
-
-                                        {/* Running CO2 */}
-                                        <div className="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-xl">🚗</span>
-                                                <span className="text-gray-700">Running CO₂</span>
-                                            </div>
-                                            <span className="font-bold text-orange-700">
-                                                {car.running_co2_kg ? `${car.running_co2_kg.toLocaleString()} kg` : "N/A"}
-                                            </span>
-                                        </div>
-
-                                        {/* Battery CO2 */}
-                                        <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-xl">🔋</span>
-                                                <span className="text-gray-700">Battery CO₂</span>
-                                            </div>
-                                            <span className="font-bold text-purple-700">
-                                                {car.battery_co2_kg ? `${car.battery_co2_kg.toLocaleString()} kg` : "Negligible"}
-                                            </span>
-                                        </div>
-
-                                        {/* Total Lifecycle CO2 */}
-                                        <div className={`flex justify-between items-center p-4 rounded-lg ${getCO2BadgeColor(car.co2 || car.total_lifecycle_co2_kg)}`}>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-xl">🌍</span>
-                                                <span className="font-semibold">Total Lifecycle CO₂</span>
-                                            </div>
-                                            <span className="font-bold text-lg">
-                                                {(car.co2 || car.total_lifecycle_co2_kg)?.toLocaleString()} kg
-                                            </span>
-                                        </div>
-
-                                        {/* CO2 per KM */}
-                                        {car.lifecycle_intensity_kg_per_km && (
-                                            <div className="flex justify-between items-center p-3 bg-teal-50 rounded-lg">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-xl">📊</span>
-                                                    <span className="text-gray-700">CO₂ per KM</span>
-                                                </div>
-                                                <span className="font-bold text-teal-700">
-                                                    {car.lifecycle_intensity_kg_per_km} kg/km
-                                                </span>
+                                        ) : (
+                                            <p className="text-gray-500 text-center py-3 text-xs">No emission data available</p>
+                                        )}
+                                        {/* Legend */}
+                                        {getPieChartData().length > 0 && (
+                                            <div className="mt-1 grid grid-cols-3 gap-1 text-xs">
+                                                {getPieChartData().map((item, index) => (
+                                                    <div key={`legend-${index}`} className="flex items-center gap-1">
+                                                        <div
+                                                            className="w-2 h-2 rounded-full"
+                                                            style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                                                        ></div>
+                                                        <span className="font-semibold text-gray-700">{item.name}</span>
+                                                    </div>
+                                                ))}
                                             </div>
                                         )}
+                                    </div>
+
+                                    {/* Total Lifecycle CO2 Highlight */}
+                                    <div className={`p-3 rounded-xl text-center font-bold ${getCO2BadgeColor(car.co2 || car.total_lifecycle_co2_kg)}`}>
+                                        <p className="text-sm font-semibold mb-1">Total Lifecycle CO₂</p>
+                                        <p className="text-lg">
+                                            {(car.co2 || car.total_lifecycle_co2_kg)?.toLocaleString()} kg
+                                        </p>
+                                    </div>
+
+                                    {/* Compact CO2 Details Section */}
+                                    <div className="space-y-2 text-xs">
+                                        <h3 className="text-xs font-bold text-gray-700 border-b pb-1">
+                                            📊 Emission Breakdown
+                                        </h3>
+
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {/* Manufacturing CO2 */}
+                                            <div className="p-2 bg-blue-50 rounded-lg border border-blue-200">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="text-lg">🏭</span>
+                                                    <p className="font-semibold text-gray-700 text-sm">Manufacturing</p>
+                                                </div>
+                                                <p className="font-bold text-blue-700 text-sm">
+                                                    {car.manufacturing_co2_kg ? `${car.manufacturing_co2_kg.toLocaleString()} kg` : "N/A"}
+                                                </p>
+                                            </div>
+
+                                            {/* Running CO2 */}
+                                            <div className="p-2 bg-orange-50 rounded-lg border border-orange-200">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="text-lg">🚗</span>
+                                                    <p className="font-semibold text-gray-700 text-sm">Running</p>
+                                                </div>
+                                                <p className="font-bold text-orange-700 text-sm">
+                                                    {car.running_co2_kg ? `${car.running_co2_kg.toLocaleString()} kg` : "N/A"}
+                                                </p>
+                                            </div>
+
+                                            {/* Battery CO2 */}
+                                            <div className="p-2 bg-purple-50 rounded-lg border border-purple-200">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="text-lg">🔋</span>
+                                                    <p className="font-semibold text-gray-700 text-sm">Battery</p>
+                                                </div>
+                                                <p className="font-bold text-purple-700 text-sm">
+                                                    {car.battery_co2_kg ? `${car.battery_co2_kg.toLocaleString()} kg` : "Negligible"}
+                                                </p>
+                                            </div>
+
+                                            {/* CO2 per KM */}
+                                            {car.lifecycle_intensity_kg_per_km && (
+                                                <div className="p-2 bg-teal-50 rounded-lg border border-teal-200">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <span className="text-lg">📏</span>
+                                                        <p className="font-semibold text-gray-700 text-sm">CO₂/KM</p>
+                                                    </div>
+                                                    <p className="font-bold text-teal-700 text-sm">
+                                                        {car.lifecycle_intensity_kg_per_km.toLocaleString()} kg/km
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </motion.div>
@@ -181,46 +285,46 @@ export default function CarCard({ car }) {
                 className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-all cursor-pointer"
                 onClick={() => setIsExpanded(true)}
             >
-            {/* Car Image */}
-            <div className="relative h-40 w-full overflow-hidden bg-gray-200">
-                <img
-                    src={carImage}
-                    alt={car.name || car.model_name}
-                    className="h-full w-full object-cover"
-                    onError={(e) => {
-                        e.target.src = "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600";
-                    }}
-                />
-            </div>
-
-            {/* Car Details */}
-            <div className="p-4 space-y-3">
-                {/* Car Name */}
-                <h3 className="font-bold text-lg">
-                    {car.name || `${car.company_name || ''} ${car.model_name}`.trim()}
-                </h3>
-
-                {/* Vehicle Type Badge */}
-                <div className="flex items-center gap-2">
-                    <span className={`text-xs font-semibold px-2 py-1 rounded-full ${getTypeColor(car.type || car.vehicle_type)}`}>
-                        {car.type || car.vehicle_type}
-                    </span>
+                {/* Car Image */}
+                <div className="relative h-40 w-full overflow-hidden bg-gray-200">
+                    <img
+                        src={carImage}
+                        alt={car.name || car.model_name}
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                            e.target.src = "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600";
+                        }}
+                    />
                 </div>
 
-                {/* Price */}
-                {(car.price || car.price_inr_lakhs) && (
-                    <p className="text-sm text-gray-600">
-                        <span className="font-semibold">Price:</span> ₹{car.price || car.price_inr_lakhs} Lakhs
-                    </p>
-                )}
+                {/* Car Details */}
+                <div className="p-4 space-y-3">
+                    {/* Car Name */}
+                    <h3 className="font-bold text-lg">
+                        {car.name || `${car.company_name || ''} ${car.model_name}`.trim()}
+                    </h3>
 
-                {/* CO2 Emissions */}
-                <div className={`p-3 rounded-lg font-semibold text-sm ${getCO2BadgeColor(car.co2 || car.total_lifecycle_co2_kg)}`}>
-                    <div>🌍 Total CO₂ Lifecycle</div>
-                    <div className="text-lg">{(car.co2 || car.total_lifecycle_co2_kg).toLocaleString()} kg</div>
+                    {/* Vehicle Type Badge */}
+                    <div className="flex items-center gap-2">
+                        <span className={`text-xs font-semibold px-2 py-1 rounded-full ${getTypeColor(car.type || car.vehicle_type)}`}>
+                            {car.type || car.vehicle_type}
+                        </span>
+                    </div>
+
+                    {/* Price */}
+                    {(car.price || car.price_inr_lakhs) && (
+                        <p className="text-sm text-gray-600">
+                            <span className="font-semibold">Price:</span> ₹{car.price || car.price_inr_lakhs} Lakhs
+                        </p>
+                    )}
+
+                    {/* CO2 Emissions */}
+                    <div className={`p-3 rounded-lg font-semibold text-sm ${getCO2BadgeColor(car.co2 || car.total_lifecycle_co2_kg)}`}>
+                        <div>🌍 Total CO₂ Lifecycle</div>
+                        <div className="text-lg">{(car.co2 || car.total_lifecycle_co2_kg).toLocaleString()} kg</div>
+                    </div>
                 </div>
-            </div>
-        </motion.div>
+            </motion.div>
         </>
     );
 }
