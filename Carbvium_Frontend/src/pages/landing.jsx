@@ -10,14 +10,6 @@ const Landing = () => {
 
       <nav className="flex text-white bg-[#0a2c2a]   justify-between items-center px-10 py-5">
           <div className="text-2xl font-bold">🌿 Carbvium</div> 
-
-          {/* <div className="hidden md:flex gap-8 text-sm text-gray-300">
-            <span className="cursor-pointer hover:text-white">Product</span>
-            <span className="cursor-pointer hover:text-white">About</span>
-            <span className="cursor-pointer hover:text-white">Blog</span>
-            <span className="cursor-pointer hover:text-white">Contact</span>
-          </div> */}
-
           <button
             onClick={() => navigate("/login")}
             className="bg-green-500 hover:bg-green-600 text-black font-medium px-6 py-2 rounded-full"
