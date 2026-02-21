@@ -31,6 +31,32 @@ app.get("/api/top15-carbon", async (req, res) => {
 
   res.json(data);
 });
+
+app.get("/api/vehicle/:uniqueId", async (req, res) => {
+  const { uniqueId } = req.params;
+
+  const { data, error } = await supabase
+    .from("vehicles_lifecycle_data")
+    .select(`
+      model_name,
+      vehicle_type,
+      manufacturing_co2_kg,
+      battery_co2_kg,
+      running_co2_kg,
+      total_lifecycle_co2_kg,
+      lifecycle_intensity_kg_per_km,
+      price_inr_lakhs
+    `)
+    .eq("unique_id", uniqueId)
+    .single(); // returns single object
+
+  if (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Vehicle not found" });
+  }
+
+  res.json(data);
+});
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
