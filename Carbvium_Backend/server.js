@@ -38,7 +38,7 @@ app.get("/api/top15-carbon", async (req, res) => {
 
   const { data, error } = await supabase
     .from("vehicles_lifecycle_data")
-    .select("model_name, total_lifecycle_co2_kg, vehicle_type")
+    .select("company_name, model_name, total_lifecycle_co2_kg, vehicle_type")
     .in("model_name", topModels);
 
   if (error) return res.status(500).json(error);
@@ -50,7 +50,7 @@ app.get("/api/vehicles", async (req, res) => {
   const { data, error } = await supabase
     .from("vehicles_lifecycle_data")
     .select(
-      "unique_id, model_name, vehicle_type, total_lifecycle_co2_kg, price_inr_lakhs, image_link"
+      "unique_id,company_name, model_name, vehicle_type, manufacturing_co2_kg, battery_co2_kg, running_co2_kg, total_lifecycle_co2_kg, lifecycle_intensity_kg_per_km, price_inr_lakhs, image_link"
     )
     .order("model_name");
 

@@ -28,8 +28,12 @@ export default function Dashboard() {
     fetch("http://localhost:5000/api/top15-carbon")
       .then((res) => res.json())
       .then((data) => {
-        // show first 15 vehicles
-        setChartData(data.slice(0, 15));
+        // Transform to include full name and show first 15 vehicles
+        const transformed = data.slice(0, 15).map((car) => ({
+          ...car,
+          name: `${car.company_name || ''} ${car.model_name}`.trim(),
+        }));
+        setChartData(transformed);
       })
       .catch((err) => console.error(err));
   }, []);
@@ -58,7 +62,8 @@ export default function Dashboard() {
         // Transform data to match card component format
         const transformedCars = data.map((car) => ({
           id: car.unique_id,
-          name: car.model_name,
+          name: `${car.company_name} ${car.model_name}`,
+          company_name: car.company_name,
           model_name: car.model_name,
           type: car.vehicle_type,
           vehicle_type: car.vehicle_type,
@@ -66,6 +71,10 @@ export default function Dashboard() {
           price_inr_lakhs: car.price_inr_lakhs,
           co2: car.total_lifecycle_co2_kg,
           total_lifecycle_co2_kg: car.total_lifecycle_co2_kg,
+          manufacturing_co2_kg: car.manufacturing_co2_kg,
+          battery_co2_kg: car.battery_co2_kg,
+          running_co2_kg: car.running_co2_kg,
+          lifecycle_intensity_kg_per_km: car.lifecycle_intensity_kg_per_km,
           image_link: car.image_link,
         }));
 
@@ -187,7 +196,7 @@ export default function Dashboard() {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
 
                   {/* HIDDEN LABELS (clean UI) */}
-                  <XAxis dataKey="model_name" tick={false} />
+                  <XAxis dataKey="name" tick={false} />
                   <YAxis />
 
                   <Tooltip />
