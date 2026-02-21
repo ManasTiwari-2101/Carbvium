@@ -31,9 +31,9 @@ app.post("/api/auth/logout", logout);
 
 app.get("/api/top15-carbon", async (req, res) => {
   const topModels = [
-    "Swift","Baleno","WagonR CNG","Nexon EV","Punch EV",
-    "Creta","Scorpio N","Venue","Innova Hycross Hybrid",
-    "Seltos","Bolero Neo","Tiago EV","Celerio","Amaze","Elevate"
+    "Swift", "Baleno", "WagonR CNG", "Nexon EV", "Punch EV",
+    "Creta", "Scorpio N", "Venue", "Innova Hycross Hybrid",
+    "Seltos", "Bolero Neo", "Tiago EV", "Celerio", "Amaze", "Elevate"
   ];
 
   const { data, error } = await supabase
@@ -42,6 +42,22 @@ app.get("/api/top15-carbon", async (req, res) => {
     .in("model_name", topModels);
 
   if (error) return res.status(500).json(error);
+
+  res.json(data);
+});
+
+app.get("/api/vehicles", async (req, res) => {
+  const { data, error } = await supabase
+    .from("vehicles_lifecycle_data")
+    .select(
+      "unique_id, model_name, vehicle_type, total_lifecycle_co2_kg, price_inr_lakhs, image_link"
+    )
+    .order("model_name");
+
+  if (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Failed to fetch vehicles" });
+  }
 
   res.json(data);
 });
