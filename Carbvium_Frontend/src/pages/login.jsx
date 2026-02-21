@@ -1,7 +1,16 @@
-import { FaEnvelope, FaLock } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaUser } from "react-icons/fa";
+import { useState } from "react";
 import carImage from "../assets/ev-car.png"; 
+import Dashboard from "./dashboard";
 
 export default function Login() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
+
+  if (isLoggedIn) {
+    return <Dashboard />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center relative overflow-hidden">
       
@@ -9,7 +18,7 @@ export default function Login() {
       <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_left,_#22c55e,_transparent_40%)]"></div>
 
       {/* Login Card */}
-      <div className="bg-white shadow-2xl rounded-2xl w-[400px] p-8 relative z-10">
+      <div className="bg-white/20 backdrop-blur-md shadow-2xl rounded-2xl w-[400px] p-8 relative z-10 border border-white/30">
 
         {/* Logo */}
         <div className="flex items-center justify-center mb-6">
@@ -20,11 +29,23 @@ export default function Login() {
 
         {/* Welcome Text */}
         <h2 className="text-2xl font-semibold text-gray-800 text-center mb-2">
-          Welcome Back
+          {isSignUp ? "Welcome to Carbvium" : "Welcome Back"}
         </h2>
-        <p className="text-gray-500 text-center mb-6">
-          Login to find your perfect eco-friendly vehicle.
+        <p className="text-gray-900 text-center mb-6">
+          {isSignUp ? "Create an account to find your perfect eco-friendly vehicle." : "Login to find your perfect eco-friendly vehicle."}
         </p>
+
+        {/* Username Input - Only for Sign Up */}
+        {isSignUp && (
+          <div className="relative mb-4">
+            <FaUser className="absolute left-3 top-3 text-green-600" />
+            <input
+              type="text"
+              placeholder="Username"
+              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+          </div>
+        )}
 
         {/* Email Input */}
         <div className="relative mb-4">
@@ -37,41 +58,62 @@ export default function Login() {
         </div>
 
         {/* Password Input */}
-        <div className="relative mb-2">
+        <div className="relative mb-4">
           <FaLock className="absolute left-3 top-3 text-green-600" />
           <input
+          minLength={8}
+          maxLength={15}
             type="password"
             placeholder="Password"
             className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
 
-        {/* Forgot Password */}
-        <div className="text-right mb-6">
-          <button className="text-sm text-green-600 hover:underline">
-            Forgot Password?
-          </button>
-        </div>
+        {/* Confirm Password - Only for Sign Up */}
+        {isSignUp && (
+          <div className="relative mb-6">
+            <FaLock className="absolute left-3 top-3 text-green-600" />
+            <input
+            minLength={8}
+            maxLength={15}
+              type="password"
+              placeholder="Confirm Password"
+              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+          </div>
+        )}
 
-        {/* Login Button */}
-        <button className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition duration-300 font-medium">
-          Login
+        {/* Forgot Password - Only for Login */}
+        {!isSignUp && (
+          <div className="text-right mb-6">
+            <button className="text-sm font-bold text-green-800 hover:text-green-900 rounded transition duration-200 hover:cursor-pointer">
+              Forgot Password?
+            </button>
+          </div>
+        )}
+
+        {/* Login/Signup Button */}
+        <button onClick={() => setIsLoggedIn(true)} className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition duration-300 font-medium hover:cursor-pointer">
+          {isSignUp ? "Sign Up" : "Login"}
         </button>
 
-        {/* Signup Link */}
-        <p className="text-center mt-6 text-gray-600">
-          Don't have an account?{" "}
-          <span className="text-green-600 font-semibold cursor-pointer hover:underline">
-            Sign Up
+        {/* Toggle Between Login and Signup */}
+        <p className="text-center mt-6 text-gray-900">
+          {isSignUp ? "Already have an account? " : "Don't have an account? "}
+          <span 
+            onClick={() => setIsSignUp(!isSignUp)}
+            className="text-sm text font-bold text-[#04673e] hover:text-green-900 rounded transition duration-200 hover:cursor-pointer"
+          >
+            {isSignUp ? "Login" : "Sign Up"}
           </span>
         </p>
       </div>
 
-      {/* Car Image Right Bottom */}
+      {/* Car Image Background */}
       <img
         src={carImage}
         alt="EV Car"
-        className="absolute bottom-10 right-10 w-60 hidden md:block"
+        className="absolute inset-0 w-full h-full object-cover z-0"
       />
     </div>
   );
