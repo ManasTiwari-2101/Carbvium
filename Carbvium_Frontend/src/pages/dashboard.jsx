@@ -14,6 +14,8 @@ import {
 import CarCard from "./card";
 import userIcon from "../assets/user_icon.jpg";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function Dashboard() {
   const navigate = useNavigate();
 
@@ -75,7 +77,7 @@ export default function Dashboard() {
 
         // If no filters applied, use the default top15-carbon endpoint
         if (vehicleType === "all" && priceRange === "all" && category === "all" && !dailyMileage) {
-          url = "http://localhost:5000/api/top15-carbon";
+          url = `${API_URL}/api/top15-carbon`;
         } else {
           // If filters are applied, use the filtered endpoint
           const params = new URLSearchParams();
@@ -92,7 +94,7 @@ export default function Dashboard() {
             params.append("mileage", dailyMileage);
             params.append("mileageFuelType", vehicleType === "EV" ? "ev" : "fuel_hybrid");
           }
-          url = `http://localhost:5000/api/top15-carbon/filtered?${params.toString()}`;
+          url = `${API_URL}/api/top15-carbon/filtered?${params.toString()}`;
         }
 
         console.log("Fetching chart data from:", url);
@@ -126,7 +128,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/vehicles");
+        const response = await fetch(`${API_URL}/api/vehicles`);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

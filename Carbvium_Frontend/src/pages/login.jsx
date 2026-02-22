@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import carImage from "../assets/ev-car.png";
 
-const API_URL = "http://localhost:5000"; // Update if your backend runs on a different URL
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function Login() {
   const navigate = useNavigate();
