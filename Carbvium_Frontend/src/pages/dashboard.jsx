@@ -21,6 +21,8 @@ export default function Dashboard() {
   const [cars, setCars] = useState([]);
   const [vehicleType, setVehicleType] = useState("all");
   const [priceRange, setPriceRange] = useState("all");
+  const [dailyMileage, setDailyMileage] = useState("");
+  const [category, setCategory] = useState("all");
   const [user, setUser] = useState({ username: "User", email: "" });
 
   // ==============================
@@ -47,7 +49,7 @@ export default function Dashboard() {
         let url;
 
         // If no filters applied, use the default top15-carbon endpoint
-        if (vehicleType === "all" && priceRange === "all") {
+        if (vehicleType === "all" && priceRange === "all" && category === "all" && !dailyMileage) {
           url = "http://localhost:5000/api/top15-carbon";
         } else {
           // If filters are applied, use the filtered endpoint
@@ -57,6 +59,13 @@ export default function Dashboard() {
           }
           if (priceRange !== "all") {
             params.append("priceRange", priceRange);
+          }
+          if (category !== "all") {
+            params.append("category", category);
+          }
+          if (dailyMileage && vehicleType !== "all") {
+            params.append("mileage", dailyMileage);
+            params.append("mileageFuelType", vehicleType === "EV" ? "ev" : "fuel_hybrid");
           }
           url = `http://localhost:5000/api/top15-carbon/filtered?${params.toString()}`;
         }
@@ -84,7 +93,7 @@ export default function Dashboard() {
     };
 
     fetchChartData();
-  }, [vehicleType, priceRange]);
+  }, [vehicleType, priceRange, category, dailyMileage]);
 
   // ==============================
   // FETCH CAR DATA FROM BACKEND
@@ -155,12 +164,24 @@ export default function Dashboard() {
         (priceRange === "high" && car.price > 20);
     }
 
-    return typeMatch && priceMatch;
+    const categoryMatch = category === "all" || (car.category && car.category.toLowerCase().includes(category.toLowerCase()));
+
+    // Mileage filter: only applies when a specific fuel type is selected
+    let mileageMatch = true;
+    if (vehicleType !== "all" && dailyMileage && parseFloat(dailyMileage) > 0) {
+      if (vehicleType === "EV") {
+        mileageMatch = car.mileage && car.mileage >= parseFloat(dailyMileage);
+      } else if (vehicleType === "FUEL" || vehicleType === "HYBRID") {
+        mileageMatch = car.mileage && car.mileage >= parseFloat(dailyMileage);
+      }
+    }
+
+    return typeMatch && priceMatch && categoryMatch && mileageMatch;
   });
 
   console.log("All cars:", cars);
   console.log("Filtered cars:", filteredCars);
-  console.log("Current filters - Type:", vehicleType, "Price:", priceRange);
+  console.log("Current filters - Type:", vehicleType, "Price:", priceRange, "Category:", category, "Daily Mileage:", dailyMileage);
 
   // ==============================
   // COLOR BASED ON VEHICLE TYPE
@@ -208,7 +229,10 @@ export default function Dashboard() {
             <label className="text-sm">Fuel Type</label>
             <select
               className="w-full mt-1 mb-3 border rounded p-2"
-              onChange={(e) => setVehicleType(e.target.value)}
+              onChange={(e) => {
+                setVehicleType(e.target.value);
+                setDailyMileage("");
+              }}
             >
               <option value="all">All</option>
               <option value="EV">Electric (EV)</option>
@@ -218,13 +242,37 @@ export default function Dashboard() {
 
             <label className="text-sm">Price Range</label>
             <select
-              className="w-full mt-1 border rounded p-2"
+              className="w-full mt-1 mb-3 border rounded p-2"
               onChange={(e) => setPriceRange(e.target.value)}
             >
               <option value="all">All</option>
               <option value="low">Below ₹10L</option>
               <option value="mid">₹10L - ₹20L</option>
               <option value="high">Above ₹20L</option>
+            </select>
+
+            <label className="text-sm">Daily Mileage {vehicleType === "EV" ? "(km/charge)" : vehicleType !== "all" ? "(km/l)" : ""}</label>
+            <input
+              type="number"
+              min="0"
+              placeholder={vehicleType === "all" ? "Select a fuel type first" : vehicleType === "EV" ? "Enter range in km/charge" : "Enter efficiency in km/l"}
+              className="w-full mt-1 mb-3 border rounded p-2 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              value={dailyMileage}
+              disabled={vehicleType === "all"}
+              onChange={(e) => setDailyMileage(e.target.value)}
+            />
+
+            <label className="text-sm">Category</label>
+            <select
+              className="w-full mt-1 border rounded p-2"
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="all">All</option>
+              <option value="sedan">Sedan</option>
+              <option value="suv">SUV</option>
+              <option value="hatchback">Hatchback</option>
+              <option value="mpv">MPV</option>
+              <option value="crossover">Crossover</option>
             </select>
           </div>
         </aside>

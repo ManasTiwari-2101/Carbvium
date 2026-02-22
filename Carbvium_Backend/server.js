@@ -39,16 +39,21 @@ app.post("/api/auth/logout", logout);
 
 // Filtered top 15 vehicles with query parameters (MUST BE BEFORE /api/top15-carbon)
 app.get("/api/top15-carbon/filtered", async (req, res) => {
-  const { vehicleType, priceRange } = req.query;
-  console.log("Filtered endpoint hit with:", { vehicleType, priceRange });
+  const { vehicleType, priceRange, category, mileage, mileageFuelType } = req.query;
+  console.log("Filtered endpoint hit with:", { vehicleType, priceRange, category, mileage, mileageFuelType });
 
   let query = supabase
     .from("vehicles_lifecycle_data")
-    .select("company_name, model_name, total_lifecycle_co2_kg, vehicle_type, price_inr_lakhs");
+    .select("company_name, model_name, total_lifecycle_co2_kg, vehicle_type, price_inr_lakhs, category, mileage");
 
   // Apply vehicle type filter
   if (vehicleType && vehicleType !== "all") {
     query = query.eq("vehicle_type", vehicleType);
+  }
+
+  // Apply category filter
+  if (category && category !== "all") {
+    query = query.ilike("category", `%${category}%`);
   }
 
   const { data, error } = await query;
@@ -61,11 +66,31 @@ app.get("/api/top15-carbon/filtered", async (req, res) => {
   // Filter by price range on client side
   let filtered = data;
   if (priceRange && priceRange !== "all") {
-    filtered = data.filter((car) => {
+    filtered = filtered.filter((car) => {
       const price = car.price_inr_lakhs;
       if (priceRange === "low") return price < 10;
       if (priceRange === "mid") return price >= 10 && price <= 20;
       if (priceRange === "high") return price > 20;
+      return true;
+    });
+  }
+
+  // Filter by mileage based on fuel type
+  if (mileage && parseFloat(mileage) > 0 && mileageFuelType) {
+    filtered = filtered.filter((car) => {
+      if (mileageFuelType === "ev") {
+        // Only keep EVs that meet the mileage requirement
+        if (car.vehicle_type === "EV") {
+          return car.mileage && car.mileage >= parseFloat(mileage);
+        }
+        return false; // Hide non-EV cars
+      } else if (mileageFuelType === "fuel_hybrid") {
+        // Only keep Fuel/Hybrid cars that meet the mileage requirement
+        if (car.vehicle_type === "FUEL" || car.vehicle_type === "HYBRID") {
+          return car.mileage && car.mileage >= parseFloat(mileage);
+        }
+        return false; // Hide EV cars
+      }
       return true;
     });
   }
