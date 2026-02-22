@@ -168,7 +168,7 @@ export default function CarCard({ car }) {
                                     </div>
 
                                     {/* Professional 3D Pie Chart */}
-                                    <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-3 rounded-2xl shadow-md border border-blue-100">
+                                    <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-3 rounded-2xl shadow-md border border-blue-100 [&_*]:outline-none [&_svg]:focus:outline-none">
                                         <h3 className="text-md font-bold text-gray-700 mb-2 text-center">
                                             🌍 CO₂ Lifecycle
                                         </h3>
