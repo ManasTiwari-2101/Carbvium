@@ -202,7 +202,7 @@ export default function Dashboard() {
           <div className="bg-white p-4 rounded-xl shadow">
             <h3 className="font-semibold mb-3">Filters</h3>
 
-            <label className="text-sm">Vehicle Type</label>
+            <label className="text-sm">Fuel Type</label>
             <select
               className="w-full mt-1 mb-3 border rounded p-2"
               onChange={(e) => setVehicleType(e.target.value)}
