@@ -454,13 +454,13 @@ export default function Dashboard() {
             ) : (
               /* Show car suggestions after filters are applied */
               <>
-                <h2 className="font-semibold mb-4 text-green-800 flex items-center gap-2">
-                  <span className="text-xl">🌱</span> Best Car For You
+                <h2 className="text-xl font-semibold mb-6 text-green-800 flex items-center gap-2">
+                  <span className="text-2xl">🌱</span> Best Car For You
                 </h2>
                 
                 {suggestedCar ? (
               <div 
-                className={`flex flex-col lg:flex-row gap-6 ${suggestedCar ? 'cursor-pointer hover:shadow-md transition-shadow' : ''}`}
+                className={`flex flex-col lg:flex-row gap-6 mt-4 ${suggestedCar ? 'cursor-pointer hover:shadow-md transition-shadow' : ''}`}
                 onClick={() => {
                   if (suggestedCar) {
                     setTimeout(() => {
@@ -478,12 +478,12 @@ export default function Dashboard() {
               >
                 {/* Car Details */}
                 <div className="flex-1">
-                  <div className="flex items-center gap-4 mb-4">
+                  <div className="flex items-center gap-4 mb-6">
                     {suggestedCar.image_link && (
                       <img 
                         src={suggestedCar.image_link} 
                         alt={suggestedCar.name}
-                        className="w-32 h-20 object-cover rounded-lg shadow-md"
+                        className="w-44 h-28 object-cover rounded-lg shadow-md"
                       />
                     )}
                     <div>
@@ -498,7 +498,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm mt-4">
                     <div className="bg-white p-3 rounded-lg shadow-sm">
                       <p className="text-gray-500">Price</p>
                       <p className="font-semibold text-gray-800">₹{suggestedCar.price_inr_lakhs?.toFixed(1)}L</p>
@@ -521,7 +521,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Savings Card */}
-                <div className="lg:w-64 bg-gradient-to-br from-green-500 to-emerald-600 p-5 rounded-xl text-white shadow-lg">
+                <div className="lg:w-64 self-start bg-gradient-to-br from-green-500 to-emerald-600 p-5 rounded-xl text-white shadow-lg">
                   <h4 className="text-sm font-medium opacity-90 mb-2">Your Potential Savings</h4>
                   <div className="space-y-3">
                     <div>
