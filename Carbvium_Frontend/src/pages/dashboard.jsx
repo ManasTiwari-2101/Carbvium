@@ -19,11 +19,28 @@ export default function Dashboard() {
 
   const [chartData, setChartData] = useState([]);
   const [cars, setCars] = useState([]);
+  
+  // Pending filter values (what user selects in the form)
+  const [pendingVehicleType, setPendingVehicleType] = useState("all");
+  const [pendingPriceRange, setPendingPriceRange] = useState("all");
+  const [pendingDailyMileage, setPendingDailyMileage] = useState("");
+  const [pendingCategory, setPendingCategory] = useState("all");
+  
+  // Applied filter values (used for actual filtering)
   const [vehicleType, setVehicleType] = useState("all");
   const [priceRange, setPriceRange] = useState("all");
   const [dailyMileage, setDailyMileage] = useState("");
   const [category, setCategory] = useState("all");
+  
   const [user, setUser] = useState({ username: "User", email: "" });
+
+  // Apply filters function
+  const applyFilters = () => {
+    setVehicleType(pendingVehicleType);
+    setPriceRange(pendingPriceRange);
+    setDailyMileage(pendingDailyMileage);
+    setCategory(pendingCategory);
+  };
 
   // ==============================
   // LOAD USER DATA FROM LOCALSTORAGE
@@ -229,9 +246,10 @@ export default function Dashboard() {
             <label className="text-sm">Fuel Type</label>
             <select
               className="w-full mt-1 mb-3 border rounded p-2"
+              value={pendingVehicleType}
               onChange={(e) => {
-                setVehicleType(e.target.value);
-                setDailyMileage("");
+                setPendingVehicleType(e.target.value);
+                setPendingDailyMileage("");
               }}
             >
               <option value="all">All</option>
@@ -243,7 +261,8 @@ export default function Dashboard() {
             <label className="text-sm">Price Range</label>
             <select
               className="w-full mt-1 mb-3 border rounded p-2"
-              onChange={(e) => setPriceRange(e.target.value)}
+              value={pendingPriceRange}
+              onChange={(e) => setPendingPriceRange(e.target.value)}
             >
               <option value="all">All</option>
               <option value="low">Below ₹10L</option>
@@ -251,21 +270,22 @@ export default function Dashboard() {
               <option value="high">Above ₹20L</option>
             </select>
 
-            <label className="text-sm">Daily Mileage {vehicleType === "EV" ? "(km/charge)" : vehicleType !== "all" ? "(km/l)" : ""}</label>
+            <label className="text-sm">Daily Mileage {pendingVehicleType === "EV" ? "(km/charge)" : pendingVehicleType !== "all" ? "(km/l)" : ""}</label>
             <input
               type="number"
               min="0"
-              placeholder={vehicleType === "all" ? "Select a fuel type first" : vehicleType === "EV" ? "Enter range in km/charge" : "Enter efficiency in km/l"}
+              placeholder={pendingVehicleType === "all" ? "Select a fuel type first" : pendingVehicleType === "EV" ? "Enter range in km/charge" : "Enter efficiency in km/l"}
               className="w-full mt-1 mb-3 border rounded p-2 disabled:bg-gray-100 disabled:cursor-not-allowed"
-              value={dailyMileage}
-              disabled={vehicleType === "all"}
-              onChange={(e) => setDailyMileage(e.target.value)}
+              value={pendingDailyMileage}
+              disabled={pendingVehicleType === "all"}
+              onChange={(e) => setPendingDailyMileage(e.target.value)}
             />
 
             <label className="text-sm">Category</label>
             <select
-              className="w-full mt-1 border rounded p-2"
-              onChange={(e) => setCategory(e.target.value)}
+              className="w-full mt-1 mb-3 border rounded p-2"
+              value={pendingCategory}
+              onChange={(e) => setPendingCategory(e.target.value)}
             >
               <option value="all">All</option>
               <option value="sedan">Sedan</option>
@@ -274,6 +294,13 @@ export default function Dashboard() {
               <option value="mpv">MPV</option>
               <option value="crossover">Crossover</option>
             </select>
+
+            <button
+              onClick={applyFilters}
+              className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-lg transition-colors"
+            >
+              Apply Filters
+            </button>
           </div>
         </aside>
 
