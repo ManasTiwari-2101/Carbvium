@@ -239,7 +239,7 @@ export default function Dashboard() {
               Top Vehicles Lifecycle Carbon Emissions
             </h2>
 
-            <div className="h-[360px] w-full">
+            <div className="h-[360px] w-full [&_*]:outline-white">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData} barCategoryGap="35%">
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -248,12 +248,30 @@ export default function Dashboard() {
                   <XAxis dataKey="name" tick={false} />
                   <YAxis />
 
-                  <Tooltip />
+                  <Tooltip 
+                    cursor={false}
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        const co2 = data.total_lifecycle_co2_kg;
+                        const co2Color = co2 < 10000 ? "text-green-600" : co2 < 20000 ? "text-yellow-500" : "text-red-500";
+                        return (
+                          <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+                            <p className="text-base font-bold text-gray-800 mb-2">{data.name}</p>
+                            <p className="text-sm text-gray-500">Total Lifecycle CO₂</p>
+                            <p className={`text-xl font-semibold ${co2Color}`}>{co2.toLocaleString()} kg</p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
 
                   <Bar
                     dataKey="total_lifecycle_co2_kg"
                     radius={[8, 8, 0, 0]}
                     barSize={28}
+                    activeBar={{ stroke: "none", fillOpacity: 1, style: { filter: "drop-shadow(0 8px 12px rgba(0,0,0,0.4))", transform: "translateY(-8px)" } }}
                   >
                     {chartData.map((entry, index) => (
                       <Cell
