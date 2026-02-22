@@ -117,7 +117,7 @@ const Landing = () => {
           WHY IT MATTERS
         </h2>
 
-        <p className="text-gray-900 text-[19px] max-w-2xl mx-auto mt-4">
+        <p className="text-gray-900 max-w-2xl mx-auto mt-4">
           Carbon dioxide is the leading cause of global warming. Tracking your
           emission is the first step in reducing it. Together, we can build a
           cleaner, sustainable world.
