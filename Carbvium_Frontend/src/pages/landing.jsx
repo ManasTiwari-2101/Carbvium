@@ -20,7 +20,7 @@ const Landing = () => {
 
           <button
             onClick={() => navigate("/login")}
-            className="bg-green-500 hover:bg-green-600 text-black font-medium px-6 py-2 rounded-full"
+            className="bg-green-500 hover:bg-green-600 text-black font-medium px-6 py-2 rounded-full hover:cursor-pointer transition"
           >
             Login
           </button>
@@ -57,9 +57,8 @@ const Landing = () => {
             CHOOSE THE RIGHT ONE 
           </h1>
 
-          <p className="text-gray-300 mt-6 max-w-xl">
-            Join a global movement toward sustainability. Monitor your carbon
-            emissions in real time and discover ways to reduce your impact.
+          <p className="text-gray-200 mt-6 max-w-xl">
+            Analyze the full environmental impact of every vehicle across its entire lifecycle. Compare models and choose the most sustainable option for you.
           </p>
 
           <div className="flex gap-4 mt-8">
@@ -86,9 +85,9 @@ const Landing = () => {
       {/* ================= HOW IT WORKS ================= */}
       <section className="bg-gray-100 py-20 text-center px-6">
         <h2 className="text-4xl font-extrabold text-[#062f2b] font-stretch-condensed font-family:'sans-serif'">
-          HOW IT WORKS
+          WHAT WILL YOU GET
         </h2>
-        <p className="text-gray-800 mt-2">
+        <p className="text-gray-900 text-[18px] mt-2">
           Simple steps to a greener future.
         </p>
 
@@ -118,9 +117,9 @@ const Landing = () => {
           WHY IT MATTERS
         </h2>
 
-        <p className="text-gray-800 max-w-2xl mx-auto mt-4">
+        <p className="text-gray-900 text-[19px] max-w-2xl mx-auto mt-4">
           Carbon dioxide is the leading cause of global warming. Tracking your
-          footprint is the first step in reducing it. Together, we can build a
+          emission is the first step in reducing it. Together, we can build a
           cleaner, sustainable world.
         </p>
 
@@ -128,7 +127,9 @@ const Landing = () => {
           <div className="text-7xl flex  font-extrabold text-green-500 w-[250px] md:w-[250px] mx-auto"><img src={co2Img} alt="CO₂" /></div>
         </div>
 
-        <button className="mt-8 bg-green-500 hover:bg-green-600 text-black px-6 py-3 rounded-full font-medium">
+        <button 
+          onClick={() => window.open("https://www.un.org/en/climatechange/science/mythbusters", "_blank")}
+          className="mt-8 bg-green-500 hover:bg-green-600 text-black px-6 py-3 rounded-full font-medium hover:cursor-pointer transition">
           Learn More
         </button>
       </section>
@@ -140,7 +141,7 @@ const Landing = () => {
           {/* Left Image */}
           <div className=" shadow-2xl shadow-black rounded-2xl">
             <img
-              src="https://images.unsplash.com/photo-1509099836639-18ba1795216d"
+              src="https://images.unsplash.com/photo-1637776524026-cfaa599a5832?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               alt="Plant"
               className="rounded-xl shadow-lg"
             />
@@ -152,17 +153,19 @@ const Landing = () => {
               LEARN & TAKE ACTION
             </h2>
 
-            <p className="text-gray-800 mt-4">
+            <p className="text-gray-800 text-[17px] mt-4">
               Stay informed about climate science, sustainability tips, and
               industry insights.
             </p>
 
-            <p className="text-gray-800  mt-2">
-              Our blog is filled with resources to help you better understand
+            <p className="text-gray-800 text-[17px] mt-2">
+              This article is filled with resources to help you better understand
               carbon emissions, personal responsibility, and global solutions.
             </p>
 
-            <button className="mt-6 bg-green-500 hover:bg-green-600 text-black px-6 py-3 rounded-full font-medium">
+            <button 
+            onClick={() => window.open("https://www.iea.org/reports/transitioning-indias-road-transport-sector/executive-summary", "_blank")}
+            className="mt-6 bg-green-500 hover:bg-green-600 text-black px-6 py-3 rounded-full font-medium hover:cursor-pointer transition">
               Read Articles
             </button>
           </div>
@@ -171,17 +174,18 @@ const Landing = () => {
 
       {/* ================= FOOTER ================= */}
       <footer className="bg-[#041f1d] text-white py-16">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between gap-10">
+        <div className="max-w-6xl mx-auto h-38 flex flex-col md:flex-row justify-between gap-10">
 
           <div>
-            <h2 className="text-2xl font-bold">🌿 Coaler</h2>
+            <h2 className="text-2xl font-bold">🌿 Carbvium</h2>
             <p className="text-gray-300 mt-4 max-w-sm">
-              Join a global movement toward sustainability. Monitor your carbon
-              emissions in real time and discover ways to reduce your impact.
+              Analyze the full environmental impact of every vehicle across its entire lifecycle. Compare models and choose the most sustainable option for you
             </p>
 
-            <button className="mt-6 bg-green-500 hover:bg-green-600 text-black px-6 py-2 rounded-full font-medium">
-              Get Started
+            <button 
+            onClick={() => navigate("/login")}
+            className="mt-6 bg-green-500 hover:bg-green-600 text-black px-6 py-2 rounded-full font-medium hover:cursor-pointer transition">
+              Login
             </button>
           </div>
 
@@ -198,7 +202,7 @@ const Landing = () => {
         
       </footer>
       <div className=" text-center text-black text-sm flex justify-center  w-full bg-yellow-300/70">
-          ©2025 Coral Inc. All rights reserved
+          ©2026 Carbvium . All rights reserved
         </div>
 
     </div>
