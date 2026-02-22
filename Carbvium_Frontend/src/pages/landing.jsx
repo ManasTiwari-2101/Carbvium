@@ -10,14 +10,6 @@ const Landing = () => {
 
       <nav className="flex text-white bg-[#0a2c2a]   justify-between items-center px-10 py-5">
           <div className="text-2xl font-bold">🌿 Carbvium</div> 
-
-          {/* <div className="hidden md:flex gap-8 text-sm text-gray-300">
-            <span className="cursor-pointer hover:text-white">Product</span>
-            <span className="cursor-pointer hover:text-white">About</span>
-            <span className="cursor-pointer hover:text-white">Blog</span>
-            <span className="cursor-pointer hover:text-white">Contact</span>
-          </div> */}
-
           <button
             onClick={() => navigate("/login")}
             className="bg-green-500 hover:bg-green-600 text-black font-medium px-6 py-2 rounded-full hover:cursor-pointer transition"
@@ -28,25 +20,6 @@ const Landing = () => {
 
       {/* ================= HERO SECTION ================= */}
       <section className="bg-[#041f1d] text-white min-h-screen flex flex-col">
-
-        {/* Navbar */}
-        {/* <nav className="flex bg-[#0a2c2a] position-sticky top-0 justify-between items-center px-10 py-6">
-          <div className="text-2xl font-bold">🌿 Carbvium</div> 
-
-          {/* <div className="hidden md:flex gap-8 text-sm text-gray-300">
-            <span className="cursor-pointer hover:text-white">Product</span>
-            <span className="cursor-pointer hover:text-white">About</span>
-            <span className="cursor-pointer hover:text-white">Blog</span>
-            <span className="cursor-pointer hover:text-white">Contact</span>
-          </div> */}
-
-          {/* <button
-            onClick={() => navigate("/login")}
-            className="bg-green-500 hover:bg-green-600 text-black font-medium px-6 py-2 rounded-full"
-          >
-            Join Today
-          </button> */}
-        {/* </nav> */} 
 
         {/* Hero Content */}
         <div className="flex flex-col items-center text-center px-6 mt-10">
@@ -60,7 +33,7 @@ const Landing = () => {
           <p className="text-gray-200 mt-6 max-w-xl">
             Analyze the full environmental impact of every vehicle across its entire lifecycle. Compare models and choose the most sustainable option for you.
           </p>
-
+{/* 
           <div className="flex gap-4 mt-8">
             <button className="bg-green-500 hover:bg-green-600 text-black px-6 py-3 rounded-full font-medium">
               Calculate Footprints
@@ -69,7 +42,7 @@ const Landing = () => {
             <button className="border border-green-400 text-green-400 px-6 py-3 rounded-full font-medium hover:bg-green-400 hover:text-black transition">
               Get Started
             </button>
-          </div>
+          </div> */}
 
           {/* Tree Image */}
           <div className="mt-12">
@@ -88,24 +61,22 @@ const Landing = () => {
           WHAT WILL YOU GET
         </h2>
         <p className="text-gray-900 text-[18px] mt-2">
-          Simple steps to a greener future.
+          Make informed decisions about your next vehicle
         </p>
 
         <div className="grid md:grid-cols-4 gap-6 mt-12 max-w-6xl mx-auto">
           {[
-            "Enter your activity data or connect integrations.",
-            "We calculate your carbon emissions instantly.",
-            "Get actionable insights and reduction tips.",
-            "Offset with verified climate projects.",
-          ].map((step, index) => (
+            { title: "🔍 Compare Vehicles", desc: "View and compare carbon footprints across multiple vehicle models in one place." },
+            { title: "📊 Visual Charts", desc: "Understand lifecycle emissions through clear, interactive charts and breakdowns." },
+            { title: "🎯 Smart Filters", desc: "Filter by price, fuel type, and carbon impact to find the best match." },
+            { title: "✅ Make Informed Choices", desc: "Get all the data you need to pick the most sustainable vehicle." },
+          ].map((feature, index) => (
             <div
               key={index}
               className="bg-white p-6 rounded-xl shadow-sm text-left"
             >
-              <h3 className="font-extrabold text-[#062f2b] mb-2">
-                STEP {index + 1}
-              </h3>
-              <p className="text-gray-800 text-sm">{step}</p>
+              <h3 className="font-extrabold text-[#062f2b] mb-2">{feature.title}</h3>
+              <p className="text-gray-800 text-sm">{feature.desc}</p>
             </div>
           ))}
         </div>
