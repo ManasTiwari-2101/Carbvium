@@ -514,8 +514,21 @@ export default function Dashboard() {
           </div>
 
           {/* ================= FOOTER ================= */}
-          <footer className="text-center text-gray-500 py-10">
-            © 2026 CARBVIUM • Sustainable Mobility Intelligence
+          <footer className="bg-gradient-to-r from-yellow-300/80 via-yellow-200/70 to-yellow-300/80 py-3 -mx-8 -mb-8 mt-8">
+            <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-[#062f2b] font-semibold">
+                <span>🌿</span>
+                <span>Carbvium</span>
+              </div>
+              <p className="text-[#062f2b]/80 text-sm">
+                © 2026 Carbvium • Sustainable Mobility Intelligence
+              </p>
+              <div className="flex items-center gap-4 text-[#062f2b]/70 text-sm">
+                <span className="hover:text-[#062f2b] cursor-pointer transition">Privacy</span>
+                <span className="hover:text-[#062f2b] cursor-pointer transition">Terms</span>
+                <span className="hover:text-[#062f2b] cursor-pointer transition">Contact</span>
+              </div>
+            </div>
           </footer>
         </main>
       </div>
