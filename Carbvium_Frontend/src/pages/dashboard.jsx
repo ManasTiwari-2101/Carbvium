@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -25,6 +25,10 @@ export default function Dashboard() {
   const [pendingPriceRange, setPendingPriceRange] = useState("all");
   const [pendingDailyMileage, setPendingDailyMileage] = useState("");
   const [pendingCategory, setPendingCategory] = useState("all");
+  
+  // Suggested car state
+  const [suggestedCar, setSuggestedCar] = useState(null);
+  const [savings, setSavings] = useState({ co2Saved: 0, percentSaved: 0 });
   
   // Applied filter values (used for actual filtering)
   const [vehicleType, setVehicleType] = useState("all");
@@ -169,36 +173,86 @@ export default function Dashboard() {
   // ==============================
   // FILTER LOGIC
   // ==============================
-  const filteredCars = cars.filter((car) => {
-    const typeMatch = vehicleType === "all" || car.vehicle_type === vehicleType;
+  const filteredCars = useMemo(() => {
+    return cars.filter((car) => {
+      const typeMatch = vehicleType === "all" || car.vehicle_type === vehicleType;
 
-    let priceMatch = true;
-    if (car.price !== null && car.price !== undefined) {
-      priceMatch =
-        priceRange === "all" ||
-        (priceRange === "low" && car.price < 10) ||
-        (priceRange === "mid" && car.price >= 10 && car.price <= 20) ||
-        (priceRange === "high" && car.price > 20);
-    }
-
-    const categoryMatch = category === "all" || (car.category && car.category.toLowerCase().includes(category.toLowerCase()));
-
-    // Mileage filter: only applies when a specific fuel type is selected
-    let mileageMatch = true;
-    if (vehicleType !== "all" && dailyMileage && parseFloat(dailyMileage) > 0) {
-      if (vehicleType === "EV") {
-        mileageMatch = car.mileage && car.mileage >= parseFloat(dailyMileage);
-      } else if (vehicleType === "FUEL" || vehicleType === "HYBRID") {
-        mileageMatch = car.mileage && car.mileage >= parseFloat(dailyMileage);
+      let priceMatch = true;
+      if (car.price !== null && car.price !== undefined) {
+        priceMatch =
+          priceRange === "all" ||
+          (priceRange === "low" && car.price < 10) ||
+          (priceRange === "mid" && car.price >= 10 && car.price <= 20) ||
+          (priceRange === "high" && car.price > 20);
       }
-    }
 
-    return typeMatch && priceMatch && categoryMatch && mileageMatch;
-  });
+      const categoryMatch = category === "all" || (car.category && car.category.toLowerCase().includes(category.toLowerCase()));
+
+      // Mileage filter: only applies when a specific fuel type is selected
+      let mileageMatch = true;
+      if (vehicleType !== "all" && dailyMileage && parseFloat(dailyMileage) > 0) {
+        if (vehicleType === "EV") {
+          mileageMatch = car.mileage && car.mileage >= parseFloat(dailyMileage);
+        } else if (vehicleType === "FUEL" || vehicleType === "HYBRID") {
+          mileageMatch = car.mileage && car.mileage >= parseFloat(dailyMileage);
+        }
+      }
+
+      return typeMatch && priceMatch && categoryMatch && mileageMatch;
+    });
+  }, [cars, vehicleType, priceRange, category, dailyMileage]);
 
   console.log("All cars:", cars);
   console.log("Filtered cars:", filteredCars);
   console.log("Current filters - Type:", vehicleType, "Price:", priceRange, "Category:", category, "Daily Mileage:", dailyMileage);
+
+  // ==============================
+  // CALCULATE BEST CAR SUGGESTION
+  // ==============================
+  useEffect(() => {
+    if (filteredCars.length > 0) {
+      // Find the car with the lowest CO2 emissions
+      const bestCar = filteredCars.reduce((best, car) => {
+        if (!best || (car.total_lifecycle_co2_kg && car.total_lifecycle_co2_kg < best.total_lifecycle_co2_kg)) {
+          return car;
+        }
+        return best;
+      }, null);
+
+      // Calculate average CO2 of filtered cars
+      const validCars = filteredCars.filter(car => car.total_lifecycle_co2_kg);
+      const avgCO2 = validCars.length > 0 
+        ? validCars.reduce((sum, car) => sum + car.total_lifecycle_co2_kg, 0) / validCars.length 
+        : 0;
+      
+      // Calculate highest CO2 in filtered set
+      const highestCO2Car = filteredCars.reduce((highest, car) => {
+        if (!highest || (car.total_lifecycle_co2_kg && car.total_lifecycle_co2_kg > highest.total_lifecycle_co2_kg)) {
+          return car;
+        }
+        return highest;
+      }, null);
+
+      if (bestCar && highestCO2Car && bestCar.total_lifecycle_co2_kg) {
+        const co2Saved = Math.round(avgCO2 - bestCar.total_lifecycle_co2_kg);
+        const percentSaved = Math.round(((avgCO2 - bestCar.total_lifecycle_co2_kg) / avgCO2) * 100);
+        const comparedToWorst = Math.round(highestCO2Car.total_lifecycle_co2_kg - bestCar.total_lifecycle_co2_kg);
+        
+        setSuggestedCar(bestCar);
+        setSavings({ 
+          co2Saved: Math.max(0, co2Saved), 
+          percentSaved: Math.max(0, percentSaved),
+          comparedToWorst: Math.max(0, comparedToWorst)
+        });
+      } else {
+        setSuggestedCar(null);
+        setSavings({ co2Saved: 0, percentSaved: 0, comparedToWorst: 0 });
+      }
+    } else {
+      setSuggestedCar(null);
+      setSavings({ co2Saved: 0, percentSaved: 0, comparedToWorst: 0 });
+    }
+  }, [filteredCars]);
 
   // ==============================
   // COLOR BASED ON VEHICLE TYPE
@@ -363,14 +417,85 @@ export default function Dashboard() {
             </div>
           </motion.div>
 
-          {/* ================= INFO TEXT ================= */}
-          <div className="bg-white p-6 rounded-2xl shadow">
-            <h2 className="font-semibold mb-2">Understanding Carbon Emissions</h2>
-            <p className="text-gray-600 leading-relaxed">
-              A vehicle's carbon footprint includes emissions generated during
-              manufacturing, battery production, and its entire operational
-              lifespan.
-            </p>
+          {/* ================= SUGGESTED CAR SECTION ================= */}
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-2xl shadow border border-green-100">
+            <h2 className="font-semibold mb-4 text-green-800 flex items-center gap-2">
+              <span className="text-xl">🌱</span> Best Car For You
+            </h2>
+            
+            {suggestedCar ? (
+              <div className="flex flex-col lg:flex-row gap-6">
+                {/* Car Details */}
+                <div className="flex-1">
+                  <div className="flex items-center gap-4 mb-4">
+                    {suggestedCar.image_link && (
+                      <img 
+                        src={suggestedCar.image_link} 
+                        alt={suggestedCar.name}
+                        className="w-32 h-20 object-cover rounded-lg shadow-md"
+                      />
+                    )}
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800">{suggestedCar.name}</h3>
+                      <span className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold ${
+                        suggestedCar.vehicle_type === "EV" ? "bg-green-100 text-green-700" :
+                        suggestedCar.vehicle_type === "HYBRID" ? "bg-gray-100 text-gray-700" :
+                        "bg-yellow-100 text-yellow-700"
+                      }`}>
+                        {suggestedCar.vehicle_type}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+                    <div className="bg-white p-3 rounded-lg shadow-sm">
+                      <p className="text-gray-500">Price</p>
+                      <p className="font-semibold text-gray-800">₹{suggestedCar.price_inr_lakhs?.toFixed(1)}L</p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg shadow-sm">
+                      <p className="text-gray-500">CO₂ Emissions</p>
+                      <p className="font-semibold text-green-600">{suggestedCar.total_lifecycle_co2_kg?.toLocaleString()} kg</p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg shadow-sm">
+                      <p className="text-gray-500">Category</p>
+                      <p className="font-semibold text-gray-800">{suggestedCar.category || "N/A"}</p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg shadow-sm">
+                      <p className="text-gray-500">Mileage</p>
+                      <p className="font-semibold text-gray-800">
+                        {suggestedCar.mileage || "N/A"} {suggestedCar.vehicle_type === "EV" ? "km/ch" : "km/l"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Savings Card */}
+                <div className="lg:w-64 bg-gradient-to-br from-green-500 to-emerald-600 p-5 rounded-xl text-white shadow-lg">
+                  <h4 className="text-sm font-medium opacity-90 mb-2">Your Potential Savings</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-3xl font-bold">{savings.co2Saved.toLocaleString()} kg</p>
+                      <p className="text-sm opacity-80">CO₂ saved vs average</p>
+                    </div>
+                    <div className="border-t border-white/20 pt-3">
+                      <p className="text-2xl font-bold">{savings.percentSaved}%</p>
+                      <p className="text-sm opacity-80">Lower than average emissions</p>
+                    </div>
+                    {savings.comparedToWorst > 0 && (
+                      <div className="border-t border-white/20 pt-3">
+                        <p className="text-lg font-semibold">{savings.comparedToWorst.toLocaleString()} kg</p>
+                        <p className="text-sm opacity-80">Better than highest option</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <p className="text-lg">Apply filters to get personalized car suggestions</p>
+                <p className="text-sm mt-2">We'll recommend the most eco-friendly option based on your preferences</p>
+              </div>
+            )}
           </div>
 
           {/* ================= CAR GRID ================= */}
