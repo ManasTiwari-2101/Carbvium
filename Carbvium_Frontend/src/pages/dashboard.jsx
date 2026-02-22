@@ -124,6 +124,9 @@ export default function Dashboard() {
           running_co2_kg: car.running_co2_kg,
           lifecycle_intensity_kg_per_km: car.lifecycle_intensity_kg_per_km,
           image_link: car.image_link,
+          horsepower: car.horsepower,
+          mileage: car.mileage,
+          category: car.category,
         }));
 
         console.log("Transformed cars:", transformedCars);

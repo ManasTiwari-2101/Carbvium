@@ -119,10 +119,32 @@ export default function CarCard({ car }) {
                                         </span>
                                     </div>
 
+                                    {/* Specifications Section */}
+                                    <div className="grid grid-cols-3 gap-2 mb-2">
+                                        {car.horsepower && (
+                                            <div className="bg-white p-3 rounded-xl shadow-sm text-center">
+                                                <p className="text-sm text-gray-900">Horsepower</p>
+                                                <p className="text-lg font-bold text-gray-800">{car.horsepower} HP</p>
+                                            </div>
+                                        )}
+                                        {car.mileage && (
+                                            <div className="bg-white p-3 rounded-xl shadow-sm text-center">
+                                                <p className="text-sm text-gray-900">Mileage</p>
+                                                <p className="text-lg font-bold text-gray-800">{car.mileage} {(car.type || car.vehicle_type)?.toLowerCase() === "ev" ? "km/ch" : "km/l"}</p>
+                                            </div>
+                                        )}
+                                        {car.category && (
+                                            <div className="bg-white p-3 rounded-xl shadow-sm text-center">
+                                                <p className="text-sm text-gray-900">Category</p>
+                                                <p className="text-lg font-bold text-gray-800">{car.category}</p>
+                                            </div>
+                                        )}
+                                    </div>
+
                                     {/* Price Section Below Image */}
                                     {(car.price || car.price_inr_lakhs) && (
                                         <div className="bg-white p-4 rounded-xl shadow-sm">
-                                            <p className="text-sm text-gray-500">Price</p>
+                                            <p className="text-l text-gray-900">Price</p>
                                             <p className="text-2xl font-bold text-gray-800">₹{car.price || car.price_inr_lakhs} Lakhs</p>
                                         </div>
                                     )}
@@ -147,7 +169,7 @@ export default function CarCard({ car }) {
 
                                     {/* Professional 3D Pie Chart */}
                                     <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-3 rounded-2xl shadow-md border border-blue-100">
-                                        <h3 className="text-sm font-bold text-gray-700 mb-2 text-center">
+                                        <h3 className="text-md font-bold text-gray-700 mb-2 text-center">
                                             🌍 CO₂ Lifecycle
                                         </h3>
                                         {getPieChartData().length > 0 ? (
@@ -217,7 +239,7 @@ export default function CarCard({ car }) {
 
                                     {/* Compact CO2 Details Section */}
                                     <div className="space-y-2 text-xs">
-                                        <h3 className="text-xs font-bold text-gray-700 border-b pb-1">
+                                        <h3 className="text-sm font-bold text-gray-700 border-b pb-1">
                                             📊 Emission Breakdown
                                         </h3>
 

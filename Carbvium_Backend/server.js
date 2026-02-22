@@ -100,7 +100,7 @@ app.get("/api/vehicles", async (req, res) => {
   const { data, error } = await supabase
     .from("vehicles_lifecycle_data")
     .select(
-      "unique_id,company_name, model_name, vehicle_type, manufacturing_co2_kg, battery_co2_kg, running_co2_kg, total_lifecycle_co2_kg, lifecycle_intensity_kg_per_km, price_inr_lakhs, image_link"
+      "unique_id,company_name, model_name, vehicle_type, manufacturing_co2_kg, battery_co2_kg, running_co2_kg, total_lifecycle_co2_kg, lifecycle_intensity_kg_per_km, price_inr_lakhs, image_link, horsepower, mileage, category"
     )
     .order("model_name");
 
