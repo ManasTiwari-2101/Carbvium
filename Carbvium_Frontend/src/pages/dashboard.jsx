@@ -371,9 +371,26 @@ export default function Dashboard() {
             transition={{ duration: 0.35 }}
             className="bg-white rounded-3xl shadow-xl p-10"
           >
-            <h2 className="text-lg font-semibold mb-6">
-              Top Vehicles Lifecycle Carbon Emissions
-            </h2>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-lg font-semibold">
+                Top Vehicles Lifecycle Carbon Emissions
+              </h2>
+              {/* Vehicle Type Legend */}
+              <div className="flex gap-4 text-sm">
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                  <span className="text-gray-600">Fuel</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full bg-gray-400"></div>
+                  <span className="text-gray-600">Hybrid</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  <span className="text-gray-600">EV</span>
+                </div>
+              </div>
+            </div>
 
             <div className="h-[360px] w-full [&_*]:outline-white">
               <ResponsiveContainer width="100%" height="100%">
@@ -428,16 +445,11 @@ export default function Dashboard() {
               <div className="text-center py-8">
                 <div className="text-5xl mb-4">🌍</div>
                 <h2 className="text-2xl font-bold text-green-800 mb-3">Welcome to Carbvium</h2>
-                <p className="text-lg text-gray-700 mb-2">Get the Best Carbon Emission Data for Your Next Vehicle</p>
-                <p className="text-gray-500 max-w-lg mx-auto">
+                <p className="text-lg text-gray-900 mb-2">Get the Best Carbon Emission Data for Your Next Vehicle</p>
+                <p className="text-gray-800 max-w-lg mx-auto">
                   Use the filters on the left to discover eco-friendly vehicles. We'll analyze lifecycle CO₂ emissions 
                   and recommend the most sustainable choice that matches your preferences.
                 </p>
-                <div className="mt-6 flex justify-center gap-4 text-sm text-gray-600">
-                  <span className="flex items-center gap-1"><span className="text-green-500">●</span> EV</span>
-                  <span className="flex items-center gap-1"><span className="text-gray-400">●</span> Hybrid</span>
-                  <span className="flex items-center gap-1"><span className="text-yellow-500">●</span> Fuel</span>
-                </div>
               </div>
             ) : (
               /* Show car suggestions after filters are applied */
