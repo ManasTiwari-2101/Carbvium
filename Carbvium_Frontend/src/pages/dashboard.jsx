@@ -289,7 +289,7 @@ export default function Dashboard() {
       {/* ================= BODY ================= */}
       <div className="flex flex-1 overflow-hidden">
         {/* ================= SIDEBAR ================= */}
-        <aside className="w-[280px] bg-gray-100 border-r p-6 flex flex-col gap-6">
+        <aside className="w-[280px] bg-gray-100 p-6 flex flex-col gap-6">
           <div className="flex flex-col items-center gap-3">
             <div className="w-20 h-20 rounded-full bg-gray-300 overflow-hidden flex items-center justify-center">
               <img src={userIcon} alt="User" className="w-full h-full object-contain" />
@@ -447,7 +447,23 @@ export default function Dashboard() {
                 </h2>
                 
                 {suggestedCar ? (
-              <div className="flex flex-col lg:flex-row gap-6">
+              <div 
+                className={`flex flex-col lg:flex-row gap-6 ${suggestedCar ? 'cursor-pointer hover:shadow-md transition-shadow' : ''}`}
+                onClick={() => {
+                  if (suggestedCar) {
+                    setTimeout(() => {
+                      const carCard = document.querySelector(`[data-car-id="${suggestedCar.id}"]`);
+                      if (carCard) {
+                        carCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        const cardElement = carCard.querySelector('.hover\\:shadow-lg');
+                        if (cardElement) {
+                          cardElement.click();
+                        }
+                      }
+                    }, 100);
+                  }
+                }}
+              >
                 {/* Car Details */}
                 <div className="flex-1">
                   <div className="flex items-center gap-4 mb-4">
@@ -527,7 +543,9 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredCars.length > 0 ? (
               filteredCars.map((car) => (
-                <CarCard key={car.id} car={car} />
+                <div key={car.id} data-car-id={car.id}>
+                  <CarCard car={car} />
+                </div>
               ))
             ) : (
               <div className="col-span-full text-center py-12">
