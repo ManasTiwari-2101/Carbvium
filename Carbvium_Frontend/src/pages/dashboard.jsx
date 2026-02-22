@@ -36,6 +36,9 @@ export default function Dashboard() {
   const [dailyMileage, setDailyMileage] = useState("");
   const [category, setCategory] = useState("all");
   
+  // Track if filters have been applied at least once
+  const [filtersApplied, setFiltersApplied] = useState(false);
+  
   const [user, setUser] = useState({ username: "User", email: "" });
 
   // Apply filters function
@@ -44,6 +47,7 @@ export default function Dashboard() {
     setPriceRange(pendingPriceRange);
     setDailyMileage(pendingDailyMileage);
     setCategory(pendingCategory);
+    setFiltersApplied(true);
   };
 
   // ==============================
@@ -276,7 +280,7 @@ export default function Dashboard() {
             localStorage.removeItem("user");
             navigate("/");
           }}
-          className="bg-green-500 hover:bg-green-600 text-black font-medium px-6 py-2 rounded-full"
+          className="bg-green-500 hover:bg-green-600 text-black font-medium px-6 py-2 rounded-full cursor-pointer"
         >
           Logout
         </button>
@@ -351,7 +355,7 @@ export default function Dashboard() {
 
             <button
               onClick={applyFilters}
-              className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-lg transition-colors"
+              className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-lg transition-colors cursor-pointer"
             >
               Apply Filters
             </button>
@@ -419,11 +423,30 @@ export default function Dashboard() {
 
           {/* ================= SUGGESTED CAR SECTION ================= */}
           <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-2xl shadow border border-green-100">
-            <h2 className="font-semibold mb-4 text-green-800 flex items-center gap-2">
-              <span className="text-xl">🌱</span> Best Car For You
-            </h2>
-            
-            {suggestedCar ? (
+            {!filtersApplied ? (
+              /* Welcome message before filters are applied */
+              <div className="text-center py-8">
+                <div className="text-5xl mb-4">🌍</div>
+                <h2 className="text-2xl font-bold text-green-800 mb-3">Welcome to Carbvium</h2>
+                <p className="text-lg text-gray-700 mb-2">Get the Best Carbon Emission Data for Your Next Vehicle</p>
+                <p className="text-gray-500 max-w-lg mx-auto">
+                  Use the filters on the left to discover eco-friendly vehicles. We'll analyze lifecycle CO₂ emissions 
+                  and recommend the most sustainable choice that matches your preferences.
+                </p>
+                <div className="mt-6 flex justify-center gap-4 text-sm text-gray-600">
+                  <span className="flex items-center gap-1"><span className="text-green-500">●</span> EV</span>
+                  <span className="flex items-center gap-1"><span className="text-gray-400">●</span> Hybrid</span>
+                  <span className="flex items-center gap-1"><span className="text-yellow-500">●</span> Fuel</span>
+                </div>
+              </div>
+            ) : (
+              /* Show car suggestions after filters are applied */
+              <>
+                <h2 className="font-semibold mb-4 text-green-800 flex items-center gap-2">
+                  <span className="text-xl">🌱</span> Best Car For You
+                </h2>
+                
+                {suggestedCar ? (
               <div className="flex flex-col lg:flex-row gap-6">
                 {/* Car Details */}
                 <div className="flex-1">
@@ -490,11 +513,13 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <p className="text-lg">Apply filters to get personalized car suggestions</p>
-                <p className="text-sm mt-2">We'll recommend the most eco-friendly option based on your preferences</p>
-              </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <p className="text-lg">No vehicles found matching your filters</p>
+                    <p className="text-sm mt-2">Try adjusting your search criteria to get car suggestions</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
