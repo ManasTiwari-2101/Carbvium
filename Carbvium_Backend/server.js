@@ -4,18 +4,24 @@ require("dotenv").config();
 
 const supabase = require("./supabase_client");
 const { signup, login, logout } = require("./auth");
+const path = require('path');
 
 const app = express();
 
 // CORS Configuration
+// Allow configuring allowed origins via env var (comma-separated), fall back to sensible defaults
+const defaultOrigins = [
+  "http://localhost",
+  "http://127.0.0.1",
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "http://localhost:8080",
+  "https://carbvium.vercel.app",
+  "https://carbvium.onrender.com"
+];
+const envOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim()) : [];
 const corsOptions = {
-  origin: [
-    "http://localhost:5173", 
-    "http://localhost:3000", 
-    "http://localhost:8080",
-    "https://carbvium.vercel.app",
-    "https://carbvium.onrender.com"
-  ],
+  origin: envOrigins.length ? envOrigins : defaultOrigins,
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
@@ -173,3 +179,17 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// Optionally serve the built frontend from the backend image when explicitly enabled
+// Set SERVE_FRONTEND=true in the backend container and ensure the frontend `dist` is available
+if (process.env.SERVE_FRONTEND === 'true') {
+  const frontendDist = path.join(__dirname, '..', 'Carbvium_Frontend', 'dist');
+  app.use(express.static(frontendDist));
+
+  // Middleware fallback: for any non-API GET request, return index.html so client-side routing works
+  app.use((req, res, next) => {
+    if (req.method !== 'GET') return next();
+    if (req.path.startsWith('/api')) return next();
+    res.sendFile(path.join(frontendDist, 'index.html'));
+  });
+}
