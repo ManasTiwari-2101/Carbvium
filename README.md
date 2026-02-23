@@ -21,6 +21,17 @@ Carbvium is a web application that helps users analyze and compare the full life
 
 ---
 
+## 🚀 Live Deployment
+
+The application is deployed and live! Visit it now:
+
+| Service | Link |
+|---------|------|
+| **Frontend** | https://carbvium-i32nn3iwr-carbvium-9630s-projects.vercel.app/ |
+| **Backend API** | https://carbvium.onrender.com |
+
+---
+
 ## 🛠️ Tech Stack
 
 ### Frontend
