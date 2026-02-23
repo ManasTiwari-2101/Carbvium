@@ -1,0 +1,70 @@
+# Carbvium - Requirements and setup notes
+
+This file lists the runtime and project requirements to run the Carbvium application (backend + frontend).
+
+System/runtime requirements
+- Node.js: >= 18.14.0 (LTS recommended)
+- npm: >= 9 (or `yarn` if preferred)
+- Docker & Docker Compose: optional but recommended for containerized setup
+- PostgreSQL: 14+ (required if you run a local/Postgres-backed instance; Supabase can be used instead)
+
+Environment variables (examples)
+- Backend: create a `.env` in `Carbvium_Backend/` with at least:
+  - PORT=3000
+  - DATABASE_URL=postgres://user:pass@host:port/dbname   # or Supabase connection URL
+  - SUPABASE_URL=...
+  - SUPABASE_KEY=...
+
+Backend (Carbvium_Backend) dependencies
+- @supabase/supabase-js ^2.97.0
+- cors ^2.8.6
+- dotenv ^17.3.1
+- express ^5.2.1
+- pg ^8.18.0
+
+Backend devDependencies
+- nodemon ^3.1.13
+
+Frontend (Carbvium_Frontend) dependencies
+- @tailwindcss/vite ^4.1.18
+- framer-motion ^12.34.3
+- react ^19.2.0
+- react-dom ^19.2.0
+- react-icons ^5.5.0
+- react-router-dom ^7.13.0
+- react-routing ^0.0.6
+- recharts ^3.7.0
+- tailwindcss ^4.1.18
+
+Frontend devDependencies
+- @eslint/js ^9.39.1
+- @types/react ^19.2.7
+- @types/react-dom ^19.2.3
+- @vitejs/plugin-react ^5.1.1
+- eslint ^9.39.1
+- eslint-plugin-react-hooks ^7.0.1
+- eslint-plugin-react-refresh ^0.4.24
+- globals ^16.5.0
+- vite ^7.3.1
+
+Install & run (basic)
+1) Install backend dependencies
+   cd Carbvium_Backend
+   npm install
+
+2) Install frontend dependencies
+   cd ../Carbvium_Frontend
+   npm install
+
+3) Run backend in development
+   cd Carbvium_Backend
+   npm run dev
+
+4) Run frontend in development
+   cd Carbvium_Frontend
+   npm run dev
+
+Notes
+- If you want to run the whole project with Docker, the repository includes `docker-compose.yml` at the root. Adjust environment variables and Postgres credentials before `docker-compose up`.
+- The backend expects either a local Postgres instance or Supabase; set `DATABASE_URL` or `SUPABASE_*` accordingly.
+- This file is informational: Node package versions are read from each package.json — use `npm install` to get exact transitive versions recorded in `package-lock.json`.
