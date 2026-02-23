@@ -244,7 +244,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 ## 👥 Authors
 
 - **Manas Tiwari** - *Devops/Database/Backend Dev*
-- **Akhilesh Singh** - *UI/UX Designer & Frontend Dev*
+- **Akhilesh Singh** - *UI/UX & Frontend/Backend Dev*
 - **Gautam Raj Singh** - *Frontend & Backend Dev*
 
 ---
