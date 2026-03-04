@@ -43,6 +43,7 @@ export default function Dashboard() {
   const [filtersApplied, setFiltersApplied] = useState(false);
 
   const [user, setUser] = useState({ username: "User", email: "" });
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Apply filters function
   const applyFilters = () => {
@@ -287,8 +288,23 @@ export default function Dashboard() {
   return (
     <div className="h-screen flex flex-col bg-gray-50">
       {/* ================= HEADER ================= */}
-      <nav className="flex text-white bg-[#0a2c2a] justify-between items-center px-10 py-5">
-        <div className="text-2xl font-bold">🌿 Carbvium</div>
+      <nav className="flex text-white bg-[#0a2c2a] justify-between items-center px-4 py-3 sm:px-10 sm:py-5">
+        <div className="flex items-center gap-3">
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="lg:hidden p-2 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {sidebarOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+          <div className="text-xl sm:text-2xl font-bold">🌿 Carbvium</div>
+        </div>
         <button
           onClick={() => {
             localStorage.removeItem("access_token");
@@ -296,30 +312,45 @@ export default function Dashboard() {
             localStorage.removeItem("user");
             navigate("/");
           }}
-          className="bg-green-500 hover:bg-green-600 text-black font-medium px-6 py-2 rounded-full cursor-pointer"
+          className="bg-green-500 hover:bg-green-600 text-black font-medium px-4 py-1.5 sm:px-6 sm:py-2 text-sm sm:text-base rounded-full cursor-pointer"
         >
           Logout
         </button>
       </nav>
 
       {/* ================= BODY ================= */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* Mobile Sidebar Overlay */}
+        {sidebarOpen && (
+          <div
+            className="lg:hidden fixed inset-0 bg-black/50 z-40"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
         {/* ================= SIDEBAR ================= */}
-        <aside className="w-[280px] bg-gray-100 p-6 flex flex-col gap-6">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-20 h-20 rounded-full bg-gray-300 overflow-hidden flex items-center justify-center">
+        <aside className={`
+          fixed lg:relative z-50 lg:z-auto
+          w-[280px] bg-gray-100 p-4 sm:p-6 flex flex-col gap-4 sm:gap-6
+          h-[calc(100vh-60px)] lg:h-auto
+          transform transition-transform duration-300 ease-in-out
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          overflow-y-auto
+        `}>
+          <div className="flex flex-col items-center gap-2 sm:gap-3">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gray-300 overflow-hidden flex items-center justify-center">
               <img src={userIcon} alt="User" className="w-full h-full object-contain" />
             </div>
-            <h3 className="font-semibold">{user.username || "User"}</h3>
-            <p className="text-sm text-gray-500">{user.email || ""}</p>
+            <h3 className="font-semibold text-sm sm:text-base">{user.username || "User"}</h3>
+            <p className="text-xs sm:text-sm text-gray-500 break-all text-center">{user.email || ""}</p>
           </div>
 
-          <div className="bg-white p-4 rounded-xl shadow">
-            <h3 className="font-semibold mb-3">Filters</h3>
+          <div className="bg-white p-3 sm:p-4 rounded-xl shadow">
+            <h3 className="font-semibold mb-2 sm:mb-3 text-sm sm:text-base">Filters</h3>
 
-            <label className="text-sm">Fuel Type</label>
+            <label className="text-xs sm:text-sm">Fuel Type</label>
             <select
-              className="w-full mt-1 mb-3 border rounded p-2"
+              className="w-full mt-1 mb-2 sm:mb-3 border rounded p-2 text-sm"
               value={pendingVehicleType}
               onChange={(e) => {
                 setPendingVehicleType(e.target.value);
@@ -332,9 +363,9 @@ export default function Dashboard() {
               <option value="HYBRID">Hybrid</option>
             </select>
 
-            <label className="text-sm">Price Range</label>
+            <label className="text-xs sm:text-sm">Price Range</label>
             <select
-              className="w-full mt-1 mb-3 border rounded p-2"
+              className="w-full mt-1 mb-2 sm:mb-3 border rounded p-2 text-sm"
               value={pendingPriceRange}
               onChange={(e) => setPendingPriceRange(e.target.value)}
             >
@@ -344,20 +375,20 @@ export default function Dashboard() {
               <option value="high">Above ₹20L</option>
             </select>
 
-            <label className="text-sm">Daily Mileage {pendingVehicleType === "EV" ? "(km/charge)" : pendingVehicleType !== "all" ? "(km/l)" : ""}</label>
+            <label className="text-xs sm:text-sm">Daily Mileage {pendingVehicleType === "EV" ? "(km/charge)" : pendingVehicleType !== "all" ? "(km/l)" : ""}</label>
             <input
               type="number"
               min="0"
               placeholder={pendingVehicleType === "all" ? "Select a fuel type first" : pendingVehicleType === "EV" ? "Enter range in km/charge" : "Enter efficiency in km/l"}
-              className="w-full mt-1 mb-3 border rounded p-2 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="w-full mt-1 mb-2 sm:mb-3 border rounded p-2 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
               value={pendingDailyMileage}
               disabled={pendingVehicleType === "all"}
               onChange={(e) => setPendingDailyMileage(e.target.value)}
             />
 
-            <label className="text-sm">Category</label>
+            <label className="text-xs sm:text-sm">Category</label>
             <select
-              className="w-full mt-1 mb-3 border rounded p-2"
+              className="w-full mt-1 mb-2 sm:mb-3 border rounded p-2 text-sm"
               value={pendingCategory}
               onChange={(e) => setPendingCategory(e.target.value)}
             >
@@ -370,8 +401,11 @@ export default function Dashboard() {
             </select>
 
             <button
-              onClick={applyFilters}
-              className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-lg transition-colors cursor-pointer"
+              onClick={() => {
+                applyFilters();
+                setSidebarOpen(false);
+              }}
+              className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 text-sm rounded-lg transition-colors cursor-pointer"
             >
               Apply Filters
             </button>
@@ -379,36 +413,36 @@ export default function Dashboard() {
         </aside>
 
         {/* ================= MAIN CONTENT ================= */}
-        <main className="flex-1 overflow-y-auto p-8 space-y-8">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-4 sm:space-y-8">
 
           {/* ================= CHART ================= */}
           <motion.div
             whileHover={{ scale: 1.04 }}
             transition={{ duration: 0.35 }}
-            className="bg-white rounded-3xl shadow-xl p-10"
+            className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-10"
           >
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-semibold">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
+              <h2 className="text-sm sm:text-lg font-semibold">
                 Top Vehicles Lifecycle Carbon Emissions
               </h2>
               {/* Vehicle Type Legend */}
-              <div className="flex gap-4 text-sm">
+              <div className="flex gap-3 sm:gap-4 text-xs sm:text-sm">
                 <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-yellow-400"></div>
                   <span className="text-gray-600">Fuel</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded-full bg-gray-400"></div>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-gray-400"></div>
                   <span className="text-gray-600">Hybrid</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500"></div>
                   <span className="text-gray-600">EV</span>
                 </div>
               </div>
             </div>
 
-            <div className="h-[360px] w-full [&_*]:outline-white">
+            <div className="h-[240px] sm:h-[360px] w-full [&_*]:outline-white">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData} barCategoryGap="35%">
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -455,23 +489,30 @@ export default function Dashboard() {
           </motion.div>
 
           {/* ================= SUGGESTED CAR SECTION ================= */}
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-2xl shadow border border-green-100">
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow border border-green-100">
             {!filtersApplied ? (
               /* Welcome message before filters are applied */
-              <div className="text-center py-8">
-                <div className="text-5xl mb-4">🌍</div>
-                <h2 className="text-2xl font-bold text-green-800 mb-3">Welcome to Carbvium</h2>
-                <p className="text-lg text-gray-900 mb-2">Get the Best Carbon Emission Data for Your Next Vehicle</p>
-                <p className="text-gray-800 max-w-lg mx-auto">
-                  Use the filters on the left to discover eco-friendly vehicles. We'll analyze lifecycle CO₂ emissions
+              <div className="text-center py-4 sm:py-8">
+                <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">🌍</div>
+                <h2 className="text-xl sm:text-2xl font-bold text-green-800 mb-2 sm:mb-3">Welcome to Carbvium</h2>
+                <p className="text-base sm:text-lg text-gray-900 mb-2">Get the Best Carbon Emission Data for Your Next Vehicle</p>
+                <p className="text-sm sm:text-base text-gray-800 max-w-lg mx-auto">
+                  Use the filters {window.innerWidth < 1024 ? 'in the menu' : 'on the left'} to discover eco-friendly vehicles. We'll analyze lifecycle CO₂ emissions
                   and recommend the most sustainable choice that matches your preferences.
                 </p>
+                {/* Mobile filter hint */}
+                <button
+                  onClick={() => setSidebarOpen(true)}
+                  className="lg:hidden mt-4 bg-green-500 hover:bg-green-600 text-white font-medium px-6 py-2 rounded-full cursor-pointer text-sm"
+                >
+                  Open Filters
+                </button>
               </div>
             ) : (
               /* Show car suggestions after filters are applied */
               <>
-                <h2 className="text-xl font-semibold mb-6 text-green-800 flex items-center gap-2">
-                  <span className="text-2xl">🌱</span> Best Car For You
+                <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-green-800 flex items-center gap-2">
+                  <span className="text-xl sm:text-2xl">🌱</span> Best Car For You
                 </h2>
 
                 {suggestedCar ? (
@@ -494,19 +535,19 @@ export default function Dashboard() {
                   >
                     {/* Car Details */}
                     <div className="flex-1">
-                      <div className="flex items-center gap-4 mb-6">
+                      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4 mb-6">
                         {suggestedCar.image_link && (
                           <img
                             src={suggestedCar.image_link}
                             alt={suggestedCar.name}
-                            className="w-44 h-28 object-cover rounded-lg shadow-md"
+                            className="w-32 h-20 sm:w-44 sm:h-28 object-cover rounded-lg shadow-md"
                           />
                         )}
-                        <div>
-                          <h3 className="text-xl font-bold text-gray-800">{suggestedCar.name}</h3>
+                        <div className="text-center sm:text-left">
+                          <h3 className="text-lg sm:text-xl font-bold text-gray-800">{suggestedCar.name}</h3>
                           <span className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold ${suggestedCar.vehicle_type === "EV" ? "bg-green-100 text-green-700" :
-                              suggestedCar.vehicle_type === "HYBRID" ? "bg-gray-100 text-gray-700" :
-                                "bg-yellow-100 text-yellow-700"
+                            suggestedCar.vehicle_type === "HYBRID" ? "bg-gray-100 text-gray-700" :
+                              "bg-yellow-100 text-yellow-700"
                             }`}>
                             {suggestedCar.vehicle_type}
                           </span>
@@ -557,9 +598,9 @@ export default function Dashboard() {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    <p className="text-lg">No vehicles found matching your filters</p>
-                    <p className="text-sm mt-2">Try adjusting your search criteria to get car suggestions</p>
+                  <div className="text-center py-6 sm:py-8 text-gray-500">
+                    <p className="text-base sm:text-lg">No vehicles found matching your filters</p>
+                    <p className="text-xs sm:text-sm mt-2">Try adjusting your search criteria to get car suggestions</p>
                   </div>
                 )}
               </>
@@ -570,19 +611,19 @@ export default function Dashboard() {
           <div className="flex justify-center">
             <div className="flex items-center gap-2 w-full lg:w-1/2">
               <div className="relative flex-1">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 text-sm">🔍</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 text-xs sm:text-sm">🔍</span>
                 <input
                   type="text"
                   placeholder="Search car name..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent focus:shadow-md transition-shadow"
+                  className="w-full pl-8 sm:pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent focus:shadow-md transition-shadow"
                 />
               </div>
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="px-3 py-2 text-sm bg-red-100 hover:bg-red-200 rounded-lg text-red-600 font-medium transition-colors cursor-pointer shadow-sm"
+                  className="px-3 py-2 text-xs sm:text-sm bg-red-100 hover:bg-red-200 rounded-lg text-red-600 font-medium transition-colors cursor-pointer shadow-sm"
                 >
                   ✕
                 </button>
@@ -591,7 +632,7 @@ export default function Dashboard() {
           </div>
 
           {/* ================= CAR GRID ================= */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {(searchQuery && searchFilteredCars.length > 0) ? (
               searchFilteredCars.map((car) => (
                 <div key={car.id} data-car-id={car.id}>
@@ -620,16 +661,16 @@ export default function Dashboard() {
           </div>
 
           {/* ================= FOOTER ================= */}
-          <footer className="bg-gradient-to-r from-yellow-300/80 via-yellow-200/70 to-yellow-300/80 py-3 -mx-8 -mb-8 mt-8">
-            <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-              <div className="flex items-center gap-2 text-[#062f2b] font-semibold">
+          <footer className="bg-gradient-to-r from-yellow-300/80 via-yellow-200/70 to-yellow-300/80 py-3 -mx-4 sm:-mx-8 -mb-4 sm:-mb-8 mt-6 sm:mt-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-[#062f2b] font-semibold text-sm sm:text-base">
                 <span>🌿</span>
                 <span>Carbvium</span>
               </div>
-              <p className="text-[#062f2b]/80 text-sm">
+              <p className="text-[#062f2b]/80 text-xs sm:text-sm text-center">
                 © 2026 Carbvium • Sustainable Mobility Intelligence
               </p>
-              <div className="flex items-center gap-4 text-[#062f2b]/70 text-sm">
+              <div className="flex items-center gap-3 sm:gap-4 text-[#062f2b]/70 text-xs sm:text-sm">
                 <span className="hover:text-[#062f2b] cursor-pointer transition">Privacy</span>
                 <span className="hover:text-[#062f2b] cursor-pointer transition">Terms</span>
                 <span className="hover:text-[#062f2b] cursor-pointer transition">Contact</span>
