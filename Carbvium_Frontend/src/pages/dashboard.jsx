@@ -21,26 +21,27 @@ export default function Dashboard() {
 
   const [chartData, setChartData] = useState([]);
   const [cars, setCars] = useState([]);
-  
+  const [searchQuery, setSearchQuery] = useState("");
+
   // Pending filter values (what user selects in the form)
   const [pendingVehicleType, setPendingVehicleType] = useState("all");
   const [pendingPriceRange, setPendingPriceRange] = useState("all");
   const [pendingDailyMileage, setPendingDailyMileage] = useState("");
   const [pendingCategory, setPendingCategory] = useState("all");
-  
+
   // Suggested car state
   const [suggestedCar, setSuggestedCar] = useState(null);
   const [savings, setSavings] = useState({ co2Saved: 0, percentSaved: 0 });
-  
+
   // Applied filter values (used for actual filtering)
   const [vehicleType, setVehicleType] = useState("all");
   const [priceRange, setPriceRange] = useState("all");
   const [dailyMileage, setDailyMileage] = useState("");
   const [category, setCategory] = useState("all");
-  
+
   // Track if filters have been applied at least once
   const [filtersApplied, setFiltersApplied] = useState(false);
-  
+
   const [user, setUser] = useState({ username: "User", email: "" });
 
   // Apply filters function
@@ -208,6 +209,19 @@ export default function Dashboard() {
     });
   }, [cars, vehicleType, priceRange, category, dailyMileage]);
 
+  // ==============================
+  // FILTER BY SEARCH QUERY
+  // ==============================
+  const searchFilteredCars = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return cars;
+    }
+    return cars.filter((car) => {
+      const fullName = `${car.company_name || ''} ${car.model_name}`.toLowerCase();
+      return fullName.includes(searchQuery.toLowerCase());
+    });
+  }, [cars, searchQuery]);
+
   console.log("All cars:", cars);
   console.log("Filtered cars:", filteredCars);
   console.log("Current filters - Type:", vehicleType, "Price:", priceRange, "Category:", category, "Daily Mileage:", dailyMileage);
@@ -227,10 +241,10 @@ export default function Dashboard() {
 
       // Calculate average CO2 of filtered cars
       const validCars = filteredCars.filter(car => car.total_lifecycle_co2_kg);
-      const avgCO2 = validCars.length > 0 
-        ? validCars.reduce((sum, car) => sum + car.total_lifecycle_co2_kg, 0) / validCars.length 
+      const avgCO2 = validCars.length > 0
+        ? validCars.reduce((sum, car) => sum + car.total_lifecycle_co2_kg, 0) / validCars.length
         : 0;
-      
+
       // Calculate highest CO2 in filtered set
       const highestCO2Car = filteredCars.reduce((highest, car) => {
         if (!highest || (car.total_lifecycle_co2_kg && car.total_lifecycle_co2_kg > highest.total_lifecycle_co2_kg)) {
@@ -243,10 +257,10 @@ export default function Dashboard() {
         const co2Saved = Math.round(avgCO2 - bestCar.total_lifecycle_co2_kg);
         const percentSaved = Math.round(((avgCO2 - bestCar.total_lifecycle_co2_kg) / avgCO2) * 100);
         const comparedToWorst = Math.round(highestCO2Car.total_lifecycle_co2_kg - bestCar.total_lifecycle_co2_kg);
-        
+
         setSuggestedCar(bestCar);
-        setSavings({ 
-          co2Saved: Math.max(0, co2Saved), 
+        setSavings({
+          co2Saved: Math.max(0, co2Saved),
           percentSaved: Math.max(0, percentSaved),
           comparedToWorst: Math.max(0, comparedToWorst)
         });
@@ -403,7 +417,7 @@ export default function Dashboard() {
                   <XAxis dataKey="name" tick={false} />
                   <YAxis />
 
-                  <Tooltip 
+                  <Tooltip
                     cursor={false}
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
@@ -449,7 +463,7 @@ export default function Dashboard() {
                 <h2 className="text-2xl font-bold text-green-800 mb-3">Welcome to Carbvium</h2>
                 <p className="text-lg text-gray-900 mb-2">Get the Best Carbon Emission Data for Your Next Vehicle</p>
                 <p className="text-gray-800 max-w-lg mx-auto">
-                  Use the filters on the left to discover eco-friendly vehicles. We'll analyze lifecycle CO₂ emissions 
+                  Use the filters on the left to discover eco-friendly vehicles. We'll analyze lifecycle CO₂ emissions
                   and recommend the most sustainable choice that matches your preferences.
                 </p>
               </div>
@@ -459,90 +473,89 @@ export default function Dashboard() {
                 <h2 className="text-xl font-semibold mb-6 text-green-800 flex items-center gap-2">
                   <span className="text-2xl">🌱</span> Best Car For You
                 </h2>
-                
+
                 {suggestedCar ? (
-              <div 
-                className={`flex flex-col lg:flex-row gap-6 mt-4 ${suggestedCar ? 'cursor-pointer hover:shadow-md transition-shadow' : ''}`}
-                onClick={() => {
-                  if (suggestedCar) {
-                    setTimeout(() => {
-                      const carCard = document.querySelector(`[data-car-id="${suggestedCar.id}"]`);
-                      if (carCard) {
-                        carCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        const cardElement = carCard.querySelector('.hover\\:shadow-lg');
-                        if (cardElement) {
-                          cardElement.click();
-                        }
+                  <div
+                    className={`flex flex-col lg:flex-row gap-6 mt-4 ${suggestedCar ? 'cursor-pointer hover:shadow-md transition-shadow' : ''}`}
+                    onClick={() => {
+                      if (suggestedCar) {
+                        setTimeout(() => {
+                          const carCard = document.querySelector(`[data-car-id="${suggestedCar.id}"]`);
+                          if (carCard) {
+                            carCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            const cardElement = carCard.querySelector('.hover\\:shadow-lg');
+                            if (cardElement) {
+                              cardElement.click();
+                            }
+                          }
+                        }, 100);
                       }
-                    }, 100);
-                  }
-                }}
-              >
-                {/* Car Details */}
-                <div className="flex-1">
-                  <div className="flex items-center gap-4 mb-6">
-                    {suggestedCar.image_link && (
-                      <img 
-                        src={suggestedCar.image_link} 
-                        alt={suggestedCar.name}
-                        className="w-44 h-28 object-cover rounded-lg shadow-md"
-                      />
-                    )}
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-800">{suggestedCar.name}</h3>
-                      <span className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold ${
-                        suggestedCar.vehicle_type === "EV" ? "bg-green-100 text-green-700" :
-                        suggestedCar.vehicle_type === "HYBRID" ? "bg-gray-100 text-gray-700" :
-                        "bg-yellow-100 text-yellow-700"
-                      }`}>
-                        {suggestedCar.vehicle_type}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm mt-4">
-                    <div className="bg-white p-3 rounded-lg shadow-sm">
-                      <p className="text-gray-500">Price</p>
-                      <p className="font-semibold text-gray-800">₹{suggestedCar.price_inr_lakhs?.toFixed(1)}L</p>
-                    </div>
-                    <div className="bg-white p-3 rounded-lg shadow-sm">
-                      <p className="text-gray-500">CO₂ Emissions</p>
-                      <p className="font-semibold text-green-600">{suggestedCar.total_lifecycle_co2_kg?.toLocaleString()} kg</p>
-                    </div>
-                    <div className="bg-white p-3 rounded-lg shadow-sm">
-                      <p className="text-gray-500">Category</p>
-                      <p className="font-semibold text-gray-800">{suggestedCar.category || "N/A"}</p>
-                    </div>
-                    <div className="bg-white p-3 rounded-lg shadow-sm">
-                      <p className="text-gray-500">Mileage</p>
-                      <p className="font-semibold text-gray-800">
-                        {suggestedCar.mileage || "N/A"} {suggestedCar.vehicle_type === "EV" ? "km/ch" : "km/l"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Savings Card */}
-                <div className="lg:w-64 self-start bg-gradient-to-br from-green-500 to-emerald-600 p-5 rounded-xl text-white shadow-lg">
-                  <h4 className="text-sm font-medium opacity-90 mb-2">Your Potential Savings</h4>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-3xl font-bold">{savings.co2Saved.toLocaleString()} kg</p>
-                      <p className="text-sm opacity-80">CO₂ saved vs average</p>
-                    </div>
-                    <div className="border-t border-white/20 pt-3">
-                      <p className="text-2xl font-bold">{savings.percentSaved}%</p>
-                      <p className="text-sm opacity-80">Lower than average emissions</p>
-                    </div>
-                    {savings.comparedToWorst > 0 && (
-                      <div className="border-t border-white/20 pt-3">
-                        <p className="text-lg font-semibold">{savings.comparedToWorst.toLocaleString()} kg</p>
-                        <p className="text-sm opacity-80">Better than highest option</p>
+                    }}
+                  >
+                    {/* Car Details */}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-4 mb-6">
+                        {suggestedCar.image_link && (
+                          <img
+                            src={suggestedCar.image_link}
+                            alt={suggestedCar.name}
+                            className="w-44 h-28 object-cover rounded-lg shadow-md"
+                          />
+                        )}
+                        <div>
+                          <h3 className="text-xl font-bold text-gray-800">{suggestedCar.name}</h3>
+                          <span className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold ${suggestedCar.vehicle_type === "EV" ? "bg-green-100 text-green-700" :
+                              suggestedCar.vehicle_type === "HYBRID" ? "bg-gray-100 text-gray-700" :
+                                "bg-yellow-100 text-yellow-700"
+                            }`}>
+                            {suggestedCar.vehicle_type}
+                          </span>
+                        </div>
                       </div>
-                    )}
+
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm mt-4">
+                        <div className="bg-white p-3 rounded-lg shadow-sm">
+                          <p className="text-gray-500">Price</p>
+                          <p className="font-semibold text-gray-800">₹{suggestedCar.price_inr_lakhs?.toFixed(1)}L</p>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg shadow-sm">
+                          <p className="text-gray-500">CO₂ Emissions</p>
+                          <p className="font-semibold text-green-600">{suggestedCar.total_lifecycle_co2_kg?.toLocaleString()} kg</p>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg shadow-sm">
+                          <p className="text-gray-500">Category</p>
+                          <p className="font-semibold text-gray-800">{suggestedCar.category || "N/A"}</p>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg shadow-sm">
+                          <p className="text-gray-500">Mileage</p>
+                          <p className="font-semibold text-gray-800">
+                            {suggestedCar.mileage || "N/A"} {suggestedCar.vehicle_type === "EV" ? "km/ch" : "km/l"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Savings Card */}
+                    <div className="lg:w-64 self-start bg-gradient-to-br from-green-500 to-emerald-600 p-5 rounded-xl text-white shadow-lg">
+                      <h4 className="text-sm font-medium opacity-90 mb-2">Your Potential Savings</h4>
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-3xl font-bold">{savings.co2Saved.toLocaleString()} kg</p>
+                          <p className="text-sm opacity-80">CO₂ saved vs average</p>
+                        </div>
+                        <div className="border-t border-white/20 pt-3">
+                          <p className="text-2xl font-bold">{savings.percentSaved}%</p>
+                          <p className="text-sm opacity-80">Lower than average emissions</p>
+                        </div>
+                        {savings.comparedToWorst > 0 && (
+                          <div className="border-t border-white/20 pt-3">
+                            <p className="text-lg font-semibold">{savings.comparedToWorst.toLocaleString()} kg</p>
+                            <p className="text-sm opacity-80">Better than highest option</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
                 ) : (
                   <div className="text-center py-8 text-gray-500">
                     <p className="text-lg">No vehicles found matching your filters</p>
@@ -553,9 +566,45 @@ export default function Dashboard() {
             )}
           </div>
 
+          {/* ================= SEARCH BAR ================= */}
+          <div className="flex justify-center">
+            <div className="flex items-center gap-2 w-full lg:w-1/2">
+              <div className="relative flex-1">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 text-sm">🔍</span>
+                <input
+                  type="text"
+                  placeholder="Search car name..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent focus:shadow-md transition-shadow"
+                />
+              </div>
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="px-3 py-2 text-sm bg-red-100 hover:bg-red-200 rounded-lg text-red-600 font-medium transition-colors cursor-pointer shadow-sm"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* ================= CAR GRID ================= */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredCars.length > 0 ? (
+            {(searchQuery && searchFilteredCars.length > 0) ? (
+              searchFilteredCars.map((car) => (
+                <div key={car.id} data-car-id={car.id}>
+                  <CarCard car={car} />
+                </div>
+              ))
+            ) : searchQuery && searchFilteredCars.length === 0 ? (
+              <div className="col-span-full text-center py-12">
+                <p className="text-lg text-gray-500">
+                  No cars found matching "{searchQuery}". Try searching for a different car name.
+                </p>
+              </div>
+            ) : filteredCars.length > 0 ? (
               filteredCars.map((car) => (
                 <div key={car.id} data-car-id={car.id}>
                   <CarCard car={car} />
