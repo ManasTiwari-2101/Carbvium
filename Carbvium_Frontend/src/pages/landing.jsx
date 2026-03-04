@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import treeImg from "../assets/LandingPage_img.png"; 
+import treeImg from "../assets/LandingPage_img.png";
 import co2Img from "../assets/CO2_arrow.png";
 
 const Landing = () => {
@@ -8,32 +8,32 @@ const Landing = () => {
   return (
     <div className="font-sans">
 
-      <nav className="flex text-white bg-[#0a2c2a]   justify-between items-center px-10 py-5">
-          <div className="text-2xl font-bold">🌿 Carbvium</div> 
-          <button
-            onClick={() => navigate("/login")}
-            className="bg-green-500 hover:bg-green-600 text-black font-medium px-6 py-2 rounded-full hover:cursor-pointer transition"
-          >
-            Login
-          </button>
-        </nav>
+      <nav className="flex text-white bg-[#0a2c2a] justify-between items-center px-4 py-3 sm:px-10 sm:py-5">
+        <div className="text-xl sm:text-2xl font-bold">🌿 Carbvium</div>
+        <button
+          onClick={() => navigate("/login")}
+          className="bg-green-500 hover:bg-green-600 text-black font-medium px-4 py-1.5 sm:px-6 sm:py-2 text-sm sm:text-base rounded-full hover:cursor-pointer transition"
+        >
+          Login
+        </button>
+      </nav>
 
       {/* ================= HERO SECTION ================= */}
-      <section className="bg-[#041f1d] text-white min-h-screen flex flex-col">
+      <section className="bg-[#041f1d] text-white min-h-fit pb-8 sm:pb-0 sm:min-h-screen flex flex-col">
 
         {/* Hero Content */}
-        <div className="flex flex-col items-center text-center px-6 mt-10">
+        <div className="flex flex-col items-center text-center px-4 sm:px-6 mt-6 sm:mt-10">
 
-          <h1 className="text-4xl md:text-[46px] mt-5 font-extrabold leading-tight max-w-4xl">
+          <h1 className="text-2xl sm:text-4xl md:text-[46px] mt-3 sm:mt-5 font-extrabold leading-tight max-w-4xl">
             EVERY VEHICLE HAS A {" "}
-            <span className="text-green-400">CARBON</span> STORY <br/>
-            CHOOSE THE RIGHT ONE 
+            <span className="text-green-400">CARBON</span> STORY <br />
+            CHOOSE THE RIGHT ONE
           </h1>
 
-          <p className="text-gray-200 mt-6 max-w-xl">
+          <p className="text-gray-200 mt-4 sm:mt-6 max-w-xl text-sm sm:text-base">
             Analyze the full environmental impact of every vehicle across its entire lifecycle. Compare models and choose the most sustainable option for you.
           </p>
-{/* 
+          {/* 
           <div className="flex gap-4 mt-8">
             <button className="bg-green-500 hover:bg-green-600 text-black px-6 py-3 rounded-full font-medium">
               Calculate Footprints
@@ -45,26 +45,26 @@ const Landing = () => {
           </div> */}
 
           {/* Tree Image */}
-          <div className="mt-12">
+          <div className="mt-8 sm:mt-12">
             <img
               src={treeImg}
               alt="Tree"
-              className="w-[350px] md:w-[450px] mx-auto drop-shadow-2xl  shadow-yellow-200"
+              className="w-[250px] sm:w-[350px] md:w-[450px] mx-auto drop-shadow-2xl shadow-yellow-200"
             />
           </div>
         </div>
       </section>
 
       {/* ================= HOW IT WORKS ================= */}
-      <section className="bg-gray-100 py-20 text-center px-6">
-        <h2 className="text-4xl font-extrabold text-[#062f2b] font-stretch-condensed font-family:'sans-serif'">
+      <section className="bg-gray-100 py-12 sm:py-20 text-center px-4 sm:px-6">
+        <h2 className="text-2xl sm:text-4xl font-extrabold text-[#062f2b] font-stretch-condensed font-family:'sans-serif'">
           WHAT WILL YOU GET
         </h2>
-        <p className="text-gray-900 text-[18px] mt-2">
+        <p className="text-gray-900 text-sm sm:text-[18px] mt-2">
           Make informed decisions about your next vehicle
         </p>
 
-        <div className="grid md:grid-cols-4 gap-6 mt-12 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mt-8 sm:mt-12 max-w-6xl mx-auto">
           {[
             { title: "🔍 Compare Vehicles", desc: "View and compare carbon footprints across multiple vehicle models in one place." },
             { title: "📊 Visual Charts", desc: "Understand lifecycle emissions through clear, interactive charts and breakdowns." },
@@ -83,34 +83,34 @@ const Landing = () => {
       </section>
 
       {/* ================= WHY IT MATTERS ================= */}
-      <section className="bg-white py-20 text-center px-6">
-        <h2 className="text-4xl font-extrabold text-[#062f2b]">
+      <section className="bg-white py-12 sm:py-20 text-center px-4 sm:px-6">
+        <h2 className="text-2xl sm:text-4xl font-extrabold text-[#062f2b]">
           WHY IT MATTERS
         </h2>
 
-        <p className="text-gray-900 max-w-2xl mx-auto mt-4">
+        <p className="text-gray-900 max-w-2xl mx-auto mt-4 text-sm sm:text-base">
           Carbon dioxide is the leading cause of global warming. Tracking your
           emission is the first step in reducing it. Together, we can build a
           cleaner, sustainable world.
         </p>
 
-        <div className="mt-12">
-          <div className="text-7xl flex  font-extrabold text-green-500 w-[250px] md:w-[250px] mx-auto"><img src={co2Img} alt="CO₂" /></div>
+        <div className="mt-8 sm:mt-12">
+          <div className="text-7xl flex font-extrabold text-green-500 w-[180px] sm:w-[250px] md:w-[250px] mx-auto"><img src={co2Img} alt="CO₂" /></div>
         </div>
 
-        <button 
+        <button
           onClick={() => window.open("https://www.un.org/en/climatechange/science/mythbusters", "_blank")}
-          className="mt-8 bg-green-500 hover:bg-green-600 text-black px-6 py-3 rounded-full font-medium hover:cursor-pointer transition">
+          className="mt-6 sm:mt-8 bg-green-500 hover:bg-green-600 text-black px-5 py-2 sm:px-6 sm:py-3 text-sm sm:text-base rounded-full font-medium hover:cursor-pointer transition">
           Learn More
         </button>
       </section>
 
       {/* ================= LEARN & TAKE ACTION ================= */}
-      <section className="bg-gray-100 py-20 px-6">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-9 items-center">
+      <section className="bg-gray-100 py-12 sm:py-20 px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-9 items-center">
 
           {/* Left Image */}
-          <div className=" shadow-2xl shadow-black rounded-2xl">
+          <div className="shadow-2xl shadow-black rounded-2xl">
             <img
               src="https://images.unsplash.com/photo-1637776524026-cfaa599a5832?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               alt="Plant"
@@ -119,24 +119,24 @@ const Landing = () => {
           </div>
 
           {/* Right Content */}
-          <div>
-            <h2 className="text-4xl font-extrabold text-[#062f2b]">
+          <div className="text-center md:text-left">
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-[#062f2b]">
               LEARN & TAKE ACTION
             </h2>
 
-            <p className="text-gray-800 text-[17px] mt-4">
+            <p className="text-gray-800 text-sm sm:text-[17px] mt-4">
               Stay informed about climate science, sustainability tips, and
               industry insights.
             </p>
 
-            <p className="text-gray-800 text-[17px] mt-2">
+            <p className="text-gray-800 text-sm sm:text-[17px] mt-2">
               This article is filled with resources to help you better understand
               carbon emissions, personal responsibility, and global solutions.
             </p>
 
-            <button 
-            onClick={() => window.open("https://www.iea.org/reports/transitioning-indias-road-transport-sector/executive-summary", "_blank")}
-            className="mt-6 bg-green-500 hover:bg-green-600 text-black px-6 py-3 rounded-full font-medium hover:cursor-pointer transition">
+            <button
+              onClick={() => window.open("https://www.iea.org/reports/transitioning-indias-road-transport-sector/executive-summary", "_blank")}
+              className="mt-6 bg-green-500 hover:bg-green-600 text-black px-5 py-2 sm:px-6 sm:py-3 text-sm sm:text-base rounded-full font-medium hover:cursor-pointer transition">
               Read Articles
             </button>
           </div>
@@ -144,25 +144,25 @@ const Landing = () => {
       </section>
 
       {/* ================= FOOTER ================= */}
-      <footer className="bg-[#041f1d] text-white py-16">
-        <div className="max-w-6xl mx-auto h-38 flex flex-col md:flex-row justify-between gap-10">
+      <footer className="bg-[#041f1d] text-white py-6 sm:py-16 px-3 sm:px-6">
+        <div className="max-w-6xl mx-auto h-auto sm:h-38 flex flex-col md:flex-row justify-between gap-4 sm:gap-10">
 
-          <div>
-            <h2 className="text-2xl font-bold">🌿 Carbvium</h2>
-            <p className="text-gray-300 mt-4 max-w-sm">
+          <div className="text-center md:text-left">
+            <h2 className="text-lg sm:text-2xl font-bold">🌿 Carbvium</h2>
+            <p className="text-gray-300 mt-2 sm:mt-4 max-w-sm text-xs sm:text-base mx-auto md:mx-0">
               Analyze the full environmental impact of every vehicle across its entire lifecycle. Compare models and choose the most sustainable option for you
             </p>
 
-            <button 
-            onClick={() => navigate("/login")}
-            className="mt-6 bg-green-500 hover:bg-green-600 text-black px-6 py-2 rounded-full font-medium hover:cursor-pointer transition">
+            <button
+              onClick={() => navigate("/login")}
+              className="mt-3 sm:mt-6 bg-green-500 hover:bg-green-600 text-black px-4 py-1 sm:px-6 sm:py-2 text-xs sm:text-base rounded-full font-medium hover:cursor-pointer transition">
               Login
             </button>
           </div>
 
-          <div className="flex gap-10 text-gray-300">
-            <div className="flex px-5 gap-5">
-              <h4 >Product</h4>
+          <div className="flex gap-4 sm:gap-10 text-gray-300 justify-center md:justify-start">
+            <div className="flex flex-wrap justify-center px-1 sm:px-5 gap-2 sm:gap-5 text-xs sm:text-base">
+              <h4>Product</h4>
               <p>About</p>
               <p>Blog</p>
               <p>Contact</p>
@@ -170,11 +170,11 @@ const Landing = () => {
           </div>
         </div>
 
-        
+
       </footer>
-      <div className=" text-center text-black text-sm flex justify-center  w-full bg-yellow-300/70">
-          ©2026 Carbvium . All rights reserved
-        </div>
+      <div className="text-center text-black text-xs sm:text-sm flex justify-center py-2 sm:py-1 w-full bg-yellow-300/70">
+        ©2026 Carbvium . All rights reserved
+      </div>
 
     </div>
   );
