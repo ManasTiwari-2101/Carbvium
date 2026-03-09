@@ -114,6 +114,8 @@ export default function Login() {
       localStorage.setItem("refresh_token", data.session.refresh_token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
+      // Replace login page in history with landing page, so back button goes to landing
+      window.history.replaceState({}, "", "/");
       navigate("/dashboard");
 
     } catch (err) {
@@ -153,7 +155,7 @@ export default function Login() {
               <div className="text-gray-400 text-sm">Vehicles Analyzed</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-green-400">10+</div>
+              <div className="text-3xl font-bold text-green-400">20+</div>
               <div className="text-gray-400 text-sm">Active Users</div>
             </div>
           </div>

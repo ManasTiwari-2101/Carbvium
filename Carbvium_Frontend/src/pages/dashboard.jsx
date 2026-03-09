@@ -67,7 +67,15 @@ export default function Dashboard() {
         console.error("Error parsing user data:", e);
       }
     }
-  }, []);
+
+    // Handle browser back button - redirect to landing page
+    const handlePopState = () => {
+      navigate("/");
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [navigate]);
 
   // ==============================
   // FETCH CHART DATA WITH FILTERS
