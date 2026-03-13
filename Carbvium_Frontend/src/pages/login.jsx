@@ -284,7 +284,7 @@ export default function Login() {
                   type="button"
                   className="text-sm text-[#041f1d] hover:text-green-700 font-medium transition-colors cursor-pointer"
                 >
-                  Forgot password?
+                  {/* Forgot password? */}
                 </button>
               </div>
             )}
