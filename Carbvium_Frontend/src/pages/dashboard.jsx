@@ -311,7 +311,7 @@ export default function Dashboard() {
               )}
             </svg>
           </button>
-          <div className="text-xl sm:text-2xl font-bold">🌿 Carbvium</div>
+          <button onClick={() => navigate("/")} className="text-xl sm:text-2xl font-bold hover:opacity-80 transition-opacity cursor-pointer bg-none border-none p-0">🌿 Carbvium</button>
         </div>
         <button
           onClick={() => {
