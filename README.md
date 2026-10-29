@@ -470,7 +470,7 @@ sequenceDiagram
     UI->>API: GET /api/top15-carbon/filtered?...
     API->>DB: Query type/category
     DB-->>API: Candidate records
-    API->>API: Apply price/mileage filters; slice and shuffle
+    API->>API: Apply price and mileage filters, then select and shuffle results
     API-->>UI: Filtered chart records
     UI->>UI: Compute lowest CO₂ and differences
     UI-->>Visitor: Updated visualization and suggestion
